@@ -23,7 +23,7 @@ export const metadata: Metadata = {
   // Favicon and icon metadata
   icons: {
     icon: [
-      { url: '/favicon.ico' },
+      { url: '/favicon.ico', sizes: 'any' },
       { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
       { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' }
     ],
@@ -56,10 +56,10 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Best Catering Services in Pune | Weddings, Corporates & Parties",
     description: "Premier catering services in Pune by Pune Caterers. Customized menus for events across all locations like Hinjewadi, Koregaon Park. Get a free quote!",
-    images: ["/og-image.jpg"],
+    images: ["/og-image.png"],
   },
   alternates: {
-    canonical: "https://thepunecaterers.com",
+    canonical: "https://punecaterers.com",
   },
 };
 
@@ -71,6 +71,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        {/* Additional favicon links for better compatibility */}
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="icon" href="/favicon-16x16.png" sizes="16x16" type="image/png" />
+        <link rel="icon" href="/favicon-32x32.png" sizes="32x32" type="image/png" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <link rel="manifest" href="/site.webmanifest" />
+        
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
