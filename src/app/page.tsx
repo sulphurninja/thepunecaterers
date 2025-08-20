@@ -24,7 +24,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
-
+import ContactFormDialog from "@/components/ContactFormDialog";
 
 export default function Home() {
   const [scrollY, setScrollY] = useState(0);
@@ -32,6 +32,12 @@ export default function Home() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isContactDialogOpen, setIsContactDialogOpen] = useState(false);
+  const [contactDialogProps, setContactDialogProps] = useState({
+    defaultEventType: "",
+    title: "Get Your Free Quote"
+  });
+
   const heroRef = useRef(null);
   const { scrollYProgress } = useScroll({
     target: heroRef,
@@ -57,8 +63,22 @@ export default function Home() {
     };
   }, []);
 
+  // Function to open contact dialog with specific props
+  const openContactDialog = (eventType = "", title = "Get Your Free Quote") => {
+    setContactDialogProps({ defaultEventType: eventType, title });
+    setIsContactDialogOpen(true);
+  };
+
   return (
     <div className="overflow-hidden bg-gradient-to-b from-slate-50 via-stone-50 to-amber-50">
+      {/* Contact Form Dialog */}
+      <ContactFormDialog
+        isOpen={isContactDialogOpen}
+        onClose={() => setIsContactDialogOpen(false)}
+        defaultEventType={contactDialogProps.defaultEventType}
+        title={contactDialogProps.title}
+      />
+
       {/* Floating Navigation with Working Mobile Menu */}
       <motion.nav
         initial={{ opacity: 0, y: -20 }}
@@ -306,6 +326,7 @@ export default function Home() {
                   className="bg-amber-600 hover:bg-amber-700 text-white px-8 py-4 rounded-xl font-semibold flex items-center justify-center space-x-2 shadow-xl transition-colors"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
+                  onClick={() => openContactDialog()}
                 >
                   <span>Get a Free Quote Now</span>
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -427,41 +448,37 @@ export default function Home() {
           </motion.div>
         </motion.div>
       </section>
-
-      {/* Contact: Floating Form with Interactions */}
       <ContactSection />
+
       {/* About: Overlapping Circles with Reveal Animation */}
-      <AboutSection />
+      <AboutSection openContactDialog={openContactDialog} />
 
       {/* Services: Split-Screen with Staggered Cards */}
-      <ServicesSection />
+      <ServicesSection openContactDialog={openContactDialog} />
 
       {/* Real Pune Event Scenarios */}
-      <EventScenariosSection />
+      <EventScenariosSection openContactDialog={openContactDialog} />
 
       {/* Events: Masonry Grid with Lazy Load */}
-      <EventsSection />
+      <EventsSection openContactDialog={openContactDialog} />
 
       {/* Locations with Interactive Map */}
-      <LocationsSection />
+      <LocationsSection openContactDialog={openContactDialog} />
 
       {/* Why Choose Us with Icon Animations */}
-      <WhyChooseUsSection />
+      <WhyChooseUsSection openContactDialog={openContactDialog} />
 
       {/* Sample Menu with Hover Effects */}
-      <SampleMenuSection />
-
-      {/* Portfolio/Gallery with Masonry */}
-      {/* <PortfolioSection /> */}
+      <SampleMenuSection openContactDialog={openContactDialog} />
 
       {/* Client Testimonials Carousel */}
-      <TestimonialsSection />
+      <TestimonialsSection openContactDialog={openContactDialog} />
 
       {/* FAQ with Smooth Accordion */}
-      <FAQSection />
+      <FAQSection openContactDialog={openContactDialog} />
 
       {/* Blog Preview */}
-      <BlogSection />
+      <BlogSection openContactDialog={openContactDialog} />
 
       {/* Contact: Floating Form with Interactions */}
       <ContactSection />
@@ -473,7 +490,7 @@ export default function Home() {
 }
 
 // Individual section components with professional icons
-function AboutSection() {
+function AboutSection({ openContactDialog }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
 
@@ -712,7 +729,7 @@ function AboutSection() {
 }
 
 // Services Section with Professional Icons
-function ServicesSection() {
+function ServicesSection({ openContactDialog }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
 
@@ -750,8 +767,6 @@ function ServicesSection() {
                 animate={isInView ? { scale: 1, x: 32, y: -32 } : {}}
                 transition={{ duration: 1, delay: 0.5 }}
               />
-
-
 
               {/* Service Icon */}
               <motion.div
@@ -819,11 +834,13 @@ function ServicesSection() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={isInView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.6, delay: 1.2 }}
+                onClick={() => openContactDialog("Full-Service Catering", "Get Full-Service Catering Quote")}
               >
                 <motion.div
                   className="absolute inset-0 bg-amber-900"
                   initial={{ x: "-100%" }}
                   whileHover={{ x: "0%" }}
+                  onClick={() => openContactDialog("Full-Service Catering", "Get Full-Service Catering Quote")}
                   transition={{ duration: 0.3 }}
                 />
                 <span className="relative">Learn More</span>
@@ -919,6 +936,7 @@ function ServicesSection() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={isInView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.6, delay: 1.4 }}
+                onClick={() => openContactDialog("Buffet-Style Catering", "Get Buffet-Style Catering Quote")}
               >
                 <motion.div
                   className="absolute inset-0 bg-orange-700"
@@ -995,7 +1013,7 @@ function ServicesSection() {
 }
 
 // Event Scenarios Section with Images
-function EventScenariosSection() {
+function EventScenariosSection({ openContactDialog }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
 
@@ -1217,18 +1235,27 @@ function EventScenariosSection() {
                       {item.solution}
                     </motion.p>
 
-                    {/* Action Link with Enhanced Styling */}
+                    {/* Action Button with Enhanced Styling */}
                     <motion.div
                       className="pt-2"
                       initial={{ opacity: 0 }}
                       animate={isInView ? { opacity: 1 } : {}}
                       transition={{ duration: 0.4, delay: 1.5 + i * 0.1 }}
                     >
-                      <motion.a
-                        href={`#${item.link}`}
+                      <motion.button
                         className="inline-flex items-center px-4 py-2 bg-amber-100 hover:bg-amber-200 text-amber-800 hover:text-amber-900 font-semibold rounded-lg transition-all duration-300 group/link"
                         whileHover={{ x: 5, scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
+                        onClick={() => openContactDialog(item.scenario.includes("wedding") ? "Wedding" :
+                          item.scenario.includes("corporate") ? "Corporate Event" :
+                            item.scenario.includes("baby shower") ? "Baby Shower" :
+                              item.scenario.includes("housewarming") ? "Housewarming" :
+                                "Festival & Religious",
+                          `Get Quote for ${item.scenario.includes("wedding") ? "Wedding" :
+                            item.scenario.includes("corporate") ? "Corporate Event" :
+                              item.scenario.includes("baby shower") ? "Baby Shower" :
+                                item.scenario.includes("housewarming") ? "Housewarming" :
+                                  "Festival & Religious"} Event`)}
                       >
                         <span>Explore Options</span>
                         <motion.svg
@@ -1239,7 +1266,7 @@ function EventScenariosSection() {
                         >
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                         </motion.svg>
-                      </motion.a>
+                      </motion.button>
                     </motion.div>
                   </motion.div>
 
@@ -1275,6 +1302,7 @@ function EventScenariosSection() {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={isInView ? { opacity: 1, scale: 1 } : {}}
             transition={{ duration: 0.6, delay: 2.4 }}
+            onClick={() => openContactDialog("Other", "Get Custom Quote")}
           >
             Get Custom Quote
           </motion.button>
@@ -1283,8 +1311,9 @@ function EventScenariosSection() {
     </section>
   );
 }
+
 // Events Section with Unique Card Layout Design
-function EventsSection() {
+function EventsSection({ openContactDialog }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
 
@@ -1399,6 +1428,7 @@ function EventsSection() {
             like floral infusions and zero-waste practices.
           </motion.p>
         </motion.div>
+
         {/* Masonry-style Grid Layout */}
         <div className="columns-1 md:columns-2 lg:columns-3 gap-8 space-y-8">
           {[
@@ -1497,7 +1527,7 @@ function EventsSection() {
               key={i}
               href={event.link}
               className={`block break-inside-avoid mb-8 group cursor-pointer ${event.size === 'large' ? 'h-80' :
-                  event.size === 'medium' ? 'h-' : 'h-72'
+                event.size === 'medium' ? 'h-' : 'h-72'
                 }`}
               initial={{ opacity: 0, y: 50 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
@@ -1549,12 +1579,13 @@ function EventsSection() {
 
                   {/* Bottom Section */}
                   <div className="flex items-center justify-between">
-                    <motion.span
-                      className="text-stone-600 text-xs font-medium px-3 py-1 bg-white/60 rounded-full"
+                    <motion.button
+                      className="text-stone-600 text-xs font-medium px-3 py-1 bg-white/60 rounded-full hover:bg-white/80 transition-colors"
                       whileHover={{ scale: 1.05 }}
+                      onClick={() => openContactDialog(event.eventType, `Get ${event.eventType} Catering Quote`)}
                     >
-                      View Details
-                    </motion.span>
+                      Get Quote
+                    </motion.button>
 
                     <motion.div
                       className="w-8 h-8 bg-white/60 rounded-full flex items-center justify-center"
@@ -1593,6 +1624,7 @@ function EventsSection() {
               className="bg-gradient-to-r from-amber-600 to-orange-600 text-white px-6 py-2 rounded-full font-semibold text-sm shadow-md hover:shadow-lg transition-all duration-300"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
+              onClick={() => openContactDialog()}
             >
               Get Quote
             </motion.button>
@@ -1602,8 +1634,9 @@ function EventsSection() {
     </section>
   );
 }
+
 // Locations Section with Professional Icons
-function LocationsSection() {
+function LocationsSection({ openContactDialog }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
 
@@ -1676,21 +1709,21 @@ function LocationsSection() {
                     >
                       {location.name}
                     </motion.h3>
-                    <p className="text-sm text-stone-600 group-hover:text-stone-700 transition-colors duration-300">
+                    <p className="text-sm text-stone-600 group-hover:text-stone-700 transition-colors duration-300 mb-2">
                       {location.desc}
                     </p>
 
-                    {/* Click indicator */}
-                    <motion.div
-                      className="flex items-center mt-2 text-xs text-amber-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                      initial={{ x: -5 }}
-                      whileHover={{ x: 0 }}
+                    {/* Get Quote button */}
+                    {/* <motion.button
+                      className="text-xs text-amber-600 font-medium hover:text-amber-800 transition-colors flex items-center group/btn"
+                      whileHover={{ x: 2 }}
+                      onClick={() => openContactDialog("", `Get Quote for ${location.name} Area`)}
                     >
-                      <span>Learn more</span>
-                      <svg className="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <span>Get Quote</span>
+                      <svg className="w-3 h-3 ml-1 group-hover/btn:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                       </svg>
-                    </motion.div>
+                    </motion.button> */}
                   </div>
                 </div>
               </motion.div>
@@ -1730,9 +1763,16 @@ function LocationsSection() {
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6, delay: 1.4 }}
             >
-              <p className="text-stone-600 text-sm">
+              <p className="text-stone-600 text-sm mb-3">
                 Click on any location above to learn more about our catering services in that area
               </p>
+              <motion.button
+                className="text-amber-600 font-medium text-sm hover:text-amber-800 transition-colors"
+                whileHover={{ scale: 1.05 }}
+                onClick={() => openContactDialog("", "Get Area-Specific Quote")}
+              >
+                Get Quote for Your Area →
+              </motion.button>
             </motion.div>
           </motion.div>
         </motion.div>
@@ -1740,8 +1780,9 @@ function LocationsSection() {
     </section>
   );
 }
+
 // Why Choose Us Section with Professional Icons
-function WhyChooseUsSection() {
+function WhyChooseUsSection({ openContactDialog }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
 
@@ -1877,13 +1918,30 @@ function WhyChooseUsSection() {
             </motion.div>
           ))}
         </div>
+
+        {/* CTA Button */}
+        <motion.div
+          className="text-center mt-12"
+          initial={{ opacity: 0, y: 20 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6, delay: 1.5 }}
+        >
+          <motion.button
+            className="bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white px-8 py-4 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+            whileHover={{ scale: 1.05, y: -2 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => openContactDialog("", "Experience Pune Caterers Excellence")}
+          >
+            Experience Our Excellence
+          </motion.button>
+        </motion.div>
       </div>
     </section>
   );
 }
 
 // Sample Menu Section with Professional Icons
-function SampleMenuSection() {
+function SampleMenuSection({ openContactDialog }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
 
@@ -1987,6 +2045,7 @@ function SampleMenuSection() {
             className="bg-amber-800 text-white px-8 py-3 rounded-full relative overflow-hidden group"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
+            onClick={() => openContactDialog("", "Customize Your Menu")}
           >
             <motion.div
               className="absolute inset-0 bg-amber-900"
@@ -2003,7 +2062,7 @@ function SampleMenuSection() {
 }
 
 // Portfolio Section with Professional Icons
-function PortfolioSection() {
+function PortfolioSection({ openContactDialog }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
 
@@ -2044,19 +2103,19 @@ function PortfolioSection() {
             From Kharadi tech campuses to Koregaon Park rooftops, our catering brings flair and finesse to every event.
             View highlights of recent weddings, corporate buffets, and private celebrations across Pune.
           </motion.p>
-          <motion.a
-            href="#"
-            className="text-amber-800 font-medium flex items-center justify-center space-x-2 hover:text-amber-600 transition-colors"
+          <motion.button
+            className="text-amber-800 font-medium flex items-center justify-center space-x-2 hover:text-amber-600 transition-colors mx-auto"
             initial={{ opacity: 0 }}
             animate={isInView ? { opacity: 1 } : {}}
             transition={{ duration: 0.6, delay: 0.6 }}
             whileHover={{ scale: 1.05 }}
+            onClick={() => openContactDialog("", "Request Portfolio Details")}
           >
             <span>Explore Portfolio</span>
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
             </svg>
-          </motion.a>
+          </motion.button>
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -2068,6 +2127,7 @@ function PortfolioSection() {
               animate={isInView ? { opacity: 1, scale: 1 } : {}}
               transition={{ duration: 0.6, delay: 0.8 + i * 0.1 }}
               whileHover={{ scale: 1.05 }}
+              onClick={() => openContactDialog("", "Get Similar Event Quote")}
             >
               <motion.div
                 className="relative overflow-hidden"
@@ -2099,7 +2159,10 @@ function PortfolioSection() {
                 transition={{ duration: 0.3 }}
               >
                 <h3 className="font-semibold mb-1">Event Showcase {i + 1}</h3>
-                <p className="text-sm text-gray-200">Professional catering excellence</p>
+                <p className="text-sm text-gray-200 mb-2">Professional catering excellence</p>
+                <button className="text-xs bg-amber-600 hover:bg-amber-700 px-3 py-1 rounded-full transition-colors">
+                  Get Similar Quote
+                </button>
               </motion.div>
 
               {/* Zoom indicator */}
@@ -2122,7 +2185,7 @@ function PortfolioSection() {
 }
 
 // Testimonials Section with Professional Icons
-function TestimonialsSection() {
+function TestimonialsSection({ openContactDialog }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
 
@@ -2226,16 +2289,16 @@ function TestimonialsSection() {
           animate={isInView ? { opacity: 1 } : {}}
           transition={{ duration: 0.6, delay: 1.5 }}
         >
-          <motion.a
-            href="#"
-            className="text-amber-800 font-medium flex items-center justify-center space-x-2 hover:text-amber-600 transition-colors"
+          <motion.button
+            className="text-amber-800 font-medium flex items-center justify-center space-x-2 hover:text-amber-600 transition-colors mx-auto"
             whileHover={{ scale: 1.05 }}
+            onClick={() => openContactDialog("", "Join Our Happy Clients")}
           >
-            <span>Share Your Experience</span>
+            <span>Join Our Happy Clients</span>
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
             </svg>
-          </motion.a>
+          </motion.button>
         </motion.div>
       </div>
     </section>
@@ -2243,7 +2306,7 @@ function TestimonialsSection() {
 }
 
 // FAQ Section with Professional Icons
-function FAQSection() {
+function FAQSection({ openContactDialog }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
   const [openFAQ, setOpenFAQ] = useState(null);
@@ -2362,16 +2425,16 @@ function FAQSection() {
           animate={isInView ? { opacity: 1 } : {}}
           transition={{ duration: 0.6, delay: 1 }}
         >
-          <motion.a
-            href="#"
-            className="text-amber-800 font-medium flex items-center justify-center space-x-2 hover:text-amber-600 transition-colors"
+          <motion.button
+            className="text-amber-800 font-medium flex items-center justify-center space-x-2 hover:text-amber-600 transition-colors mx-auto"
             whileHover={{ scale: 1.05 }}
+            onClick={() => openContactDialog("", "Ask Your Question")}
           >
-            <span>Ask a Question</span>
+            <span>Have More Questions?</span>
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-          </motion.a>
+          </motion.button>
         </motion.div>
       </div>
     </section>
@@ -2379,7 +2442,7 @@ function FAQSection() {
 }
 
 // Blog Section with Professional Icons
-function BlogSection() {
+function BlogSection({ openContactDialog }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
 
@@ -2452,6 +2515,7 @@ function BlogSection() {
               animate={isInView ? { opacity: 1, x: 0 } : {}}
               transition={{ duration: 0.6, delay: 0.6 + i * 0.2 }}
               whileHover={{ y: -3, scale: 1.02 }}
+              onClick={() => openContactDialog("", "Get Notified About Blog Updates")}
             >
               <motion.div
                 className="w-12 h-12 bg-stone-100 rounded-xl flex items-center justify-center mb-4"
@@ -2483,12 +2547,26 @@ function BlogSection() {
             </motion.div>
           ))}
         </div>
+
+        <motion.div
+          className="text-center mt-8"
+          initial={{ opacity: 0 }}
+          animate={isInView ? { opacity: 1 } : {}}
+          transition={{ duration: 0.6, delay: 1.2 }}
+        >
+          <motion.button
+            className="bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white px-6 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+            whileHover={{ scale: 1.05, y: -2 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => openContactDialog("", "Subscribe for Blog Updates")}
+          >
+            Get Notified When Blog Launches
+          </motion.button>
+        </motion.div>
       </div>
     </section>
   );
 }
-
-
 
 function ContactSection() {
   const ref = useRef(null);
