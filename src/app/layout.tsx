@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { GoogleAnalytics } from '@next/third-parties/google'
+// import { GoogleAnalytics } from '@next/third-parties/google'
 import "./globals.css";
 import FloatingButtons from "@/components/FloatingButtons";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
@@ -64,10 +64,6 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "https://thepunecaterers.com",
   },
-  // Add verification for Google Search Console
-  verification: {
-    google: "your-search-console-verification-code", // You'll get this from Search Console
-  },
 };
 
 export default function RootLayout({
@@ -128,7 +124,7 @@ export default function RootLayout({
         <FloatingWhatsApp />
         
         {/* Google Analytics */}
-        <GoogleAnalytics gaId="G-TD921S7MW4" />
+        {/* <GoogleAnalytics gaId="G-TD921S7MW4" /> */}
       </body>
     </html>
   );
