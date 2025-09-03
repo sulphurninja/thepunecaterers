@@ -2,11 +2,11 @@
 
 import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
-import { motion, useScroll, useTransform, useInView } from "framer-motion";
+import { motion, useScroll, useTransform, useInView, AnimatePresence } from "framer-motion";
 import { getLocationBySlug, type LocationData } from "@/data/locations";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { Calendar, CalendarDays, Mail, MapPin, Phone, Send, Users, MessageCircle, Clock, Star, Utensils, Building, Home, Heart, CheckCircle, ArrowRight, TrendingUp, Award, Shield } from "lucide-react";
+import { Calendar, CalendarDays, Mail, MapPin, Phone, Send, Users, MessageCircle, Clock, Star, Utensils, Building, Home, Heart, CheckCircle, ArrowRight, TrendingUp, Award, Shield, XCircle } from "lucide-react";
 import { format } from "date-fns";
 import {
   Select,
@@ -861,12 +861,62 @@ function ContactCTA({
 }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
-  const [formSubmitted, setFormSubmitted] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Add email functionality state
+  const [localIsSubmitting, setLocalIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<{
+    type: 'success' | 'error' | null;
+    message: string;
+  }>({ type: null, message: '' });
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setFormSubmitted(true);
-    setTimeout(() => setFormSubmitted(false), 3000);
+    setLocalIsSubmitting(true);
+    setSubmitStatus({ type: null, message: '' });
+
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...formData,
+          eventDate: formData.eventDate ? format(formData.eventDate, 'yyyy-MM-dd') : '',
+          source: `Location Page - ${locationData.name}`,
+          pageUrl: window.location.href
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setSubmitStatus({
+          type: 'success',
+          message: 'Thank you! Your quote request has been sent successfully. We\'ll get back to you within 24 hours.'
+        });
+        // Reset form
+        setFormData({
+          name: '',
+          email: '',
+          phone: '',
+          eventDate: '',
+          guestCount: '',
+          specificLocation: '',
+          message: ''
+        });
+      } else {
+        throw new Error(data.error || 'Failed to send message');
+      }
+    } catch (error) {
+      console.error('Contact form error:', error);
+      setSubmitStatus({
+        type: 'error',
+        message: 'Sorry, there was an error sending your message. Please try again or call us directly at +91-8087889252.'
+      });
+    } finally {
+      setLocalIsSubmitting(false);
+    }
   };
 
   return (
@@ -903,6 +953,30 @@ function ContactCTA({
               Get your free quote in under 24 hours.
             </p>
           </motion.div>
+          {/* Status Messages */}
+          <AnimatePresence mode="wait">
+            {submitStatus.type && (
+              <motion.div
+                initial={{ opacity: 0, y: -20, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -20, scale: 0.95 }}
+                transition={{ duration: 0.3 }}
+                className={`mb-8 p-6 rounded-2xl border max-w-4xl mx-auto ${submitStatus.type === 'success'
+                  ? 'bg-green-900/20 border-green-500/30 text-green-400'
+                  : 'bg-red-900/20 border-red-500/30 text-red-400'
+                  }`}
+              >
+                <div className="flex items-center space-x-3">
+                  {submitStatus.type === 'success' ? (
+                    <CheckCircle className="w-6 h-6 flex-shrink-0" />
+                  ) : (
+                    <XCircle className="w-6 h-6 flex-shrink-0" />
+                  )}
+                  <p className="font-medium">{submitStatus.message}</p>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           <div className="grid lg:grid-cols-2 gap-16 items-center">
 
@@ -978,12 +1052,13 @@ function ContactCTA({
               transition={{ duration: 0.8, delay: 0.5 }}
             >
               <form onSubmit={handleSubmit} className="space-y-6">
+                {/* Form fields with disabled states */}
                 <div className="grid md:grid-cols-2 gap-6">
                   {[
                     { name: 'name', type: 'text', placeholder: 'Your Name', required: true },
                     { name: 'phone', type: 'tel', placeholder: 'Phone Number', required: true },
                     { name: 'email', type: 'email', placeholder: 'Email Address', required: true },
-                    { name: 'eventDate', type: 'date', placeholder: 'Event Date', required: true }
+                    { name: 'eventDate', type: 'date', placeholder: 'Event Date', required: false }
                   ].map((field, i) => (
                     <motion.div
                       key={field.name}
@@ -999,18 +1074,10 @@ function ContactCTA({
                         onChange={(e) => setFormData({ ...formData, [field.name]: e.target.value })}
                         onFocus={() => setFocusedField(field.name)}
                         onBlur={() => setFocusedField(null)}
-                        className="w-full bg-white/10 border border-white/30 rounded-2xl px-6 py-4 text-white placeholder-stone-300 focus:outline-none focus:ring-2 focus:ring-amber-400/50 focus:border-amber-400/50 transition-all duration-300"
+                        className="w-full bg-white/10 border border-white/30 rounded-2xl px-6 py-4 text-white placeholder-stone-300 focus:outline-none focus:ring-2 focus:ring-amber-400/50 focus:border-amber-400/50 transition-all duration-300 disabled:opacity-50"
                         required={field.required}
+                        disabled={localIsSubmitting || submitStatus.type === 'success'}
                       />
-                      {focusedField === field.name && (
-                        <motion.div
-                          className="absolute inset-0 bg-amber-400/10 rounded-2xl -z-10"
-                          initial={{ scale: 0.9, opacity: 0 }}
-                          animate={{ scale: 1.02, opacity: 1 }}
-                          exit={{ scale: 0.9, opacity: 0 }}
-                          transition={{ duration: 0.2 }}
-                        />
-                      )}
                     </motion.div>
                   ))}
                 </div>
@@ -1026,16 +1093,16 @@ function ContactCTA({
                     placeholder="Guest Count"
                     value={formData.guestCount}
                     onChange={(e) => setFormData({ ...formData, guestCount: e.target.value })}
-                    className="w-full bg-white/10 border border-white/30 rounded-2xl px-6 py-4 text-white placeholder-stone-300 focus:outline-none focus:ring-2 focus:ring-amber-400/50 focus:border-amber-400/50 transition-all duration-300"
-                    required
+                    className="w-full bg-white/10 border border-white/30 rounded-2xl px-6 py-4 text-white placeholder-stone-300 focus:outline-none focus:ring-2 focus:ring-amber-400/50 focus:border-amber-400/50 transition-all duration-300 disabled:opacity-50"
+                    disabled={localIsSubmitting || submitStatus.type === 'success'}
                   />
                   <input
                     type="text"
                     placeholder={`Location in ${locationData.name}`}
                     value={formData.specificLocation}
                     onChange={(e) => setFormData({ ...formData, specificLocation: e.target.value })}
-                    className="w-full bg-white/10 border border-white/30 rounded-2xl px-6 py-4 text-white placeholder-stone-300 focus:outline-none focus:ring-2 focus:ring-amber-400/50 focus:border-amber-400/50 transition-all duration-300"
-                    required
+                    className="w-full bg-white/10 border border-white/30 rounded-2xl px-6 py-4 text-white placeholder-stone-300 focus:outline-none focus:ring-2 focus:ring-amber-400/50 focus:border-amber-400/50 transition-all duration-300 disabled:opacity-50"
+                    disabled={localIsSubmitting || submitStatus.type === 'success'}
                   />
                 </motion.div>
 
@@ -1049,7 +1116,8 @@ function ContactCTA({
                     rows={4}
                     value={formData.message}
                     onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                    className="w-full bg-white/10 border border-white/30 rounded-2xl px-6 py-4 text-white placeholder-stone-300 focus:outline-none focus:ring-2 focus:ring-amber-400/50 focus:border-amber-400/50 resize-none transition-all duration-300"
+                    className="w-full bg-white/10 border border-white/30 rounded-2xl px-6 py-4 text-white placeholder-stone-300 focus:outline-none focus:ring-2 focus:ring-amber-400/50 focus:border-amber-400/50 resize-none transition-all duration-300 disabled:opacity-50"
+                    disabled={localIsSubmitting || submitStatus.type === 'success'}
                   />
                 </motion.div>
 
@@ -1061,22 +1129,21 @@ function ContactCTA({
                 >
                   <motion.button
                     type="submit"
-                    className="w-full bg-gradient-to-r from-amber-500 to-orange-500 text-white px-8 py-4 rounded-2xl font-semibold relative overflow-hidden group flex items-center justify-center space-x-2"
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    disabled={formSubmitted}
+                    className="w-full bg-gradient-to-r from-amber-500 to-orange-500 text-white px-8 py-4 rounded-2xl font-semibold relative overflow-hidden group flex items-center justify-center space-x-2 disabled:opacity-50"
+                    whileHover={{ scale: localIsSubmitting || submitStatus.type === 'success' ? 1 : 1.02 }}
+                    whileTap={{ scale: localIsSubmitting || submitStatus.type === 'success' ? 1 : 0.98 }}
+                    disabled={localIsSubmitting || submitStatus.type === 'success'}
                   >
-                    <motion.div
-                      className="absolute inset-0 bg-gradient-to-r from-amber-600 to-orange-600"
-                      initial={{ x: "-100%" }}
-                      whileHover={{ x: "0%" }}
-                      transition={{ duration: 0.3 }}
-                    />
                     <span className="relative flex items-center space-x-2">
-                      {formSubmitted ? (
+                      {localIsSubmitting ? (
+                        <>
+                          <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                          <span>Sending Request...</span>
+                        </>
+                      ) : submitStatus.type === 'success' ? (
                         <>
                           <CheckCircle className="w-5 h-5" />
-                          <span>Quote Request Sent!</span>
+                          <span>Request Sent Successfully!</span>
                         </>
                       ) : (
                         <>
@@ -1094,6 +1161,7 @@ function ContactCTA({
               </form>
             </motion.div>
           </div>
+
 
           {/* Bottom CTA */}
           <motion.div

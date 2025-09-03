@@ -2,9 +2,9 @@
 
 import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
-import { motion, useScroll, useTransform, useInView } from "framer-motion";
+import { motion, useScroll, useTransform, useInView, AnimatePresence } from "framer-motion";
 // Add these imports at the top of your file
-import { Calendar, CalendarDays, Mail, MapPin, Phone, Send, Users } from "lucide-react";
+import { Calendar, CalendarDays, CheckCircle, Mail, MapPin, Phone, Send, Users, XCircle } from "lucide-react";
 import { format } from "date-fns";
 import {
   Select,
@@ -2568,6 +2568,8 @@ function BlogSection({ openContactDialog }) {
   );
 }
 
+// Find and replace the ContactSection function with this updated version:
+
 function ContactSection() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
@@ -2583,14 +2585,78 @@ function ContactSection() {
   });
   const [focusedField, setFocusedField] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<{
+    type: 'success' | 'error' | null;
+    message: string;
+  }>({ type: null, message: '' });
+
+  // Auto-reset form after successful submission
+  useEffect(() => {
+    if (submitStatus.type === 'success') {
+      const timer = setTimeout(() => {
+        setFormData({
+          name: '',
+          email: '',
+          phone: '',
+          eventDate: null,
+          guestCount: '',
+          location: '',
+          eventType: '',
+          message: ''
+        });
+        setSubmitStatus({ type: null, message: '' });
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [submitStatus.type]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    setIsSubmitting(false);
-    // Reset form or show success message
+    setSubmitStatus({ type: null, message: '' });
+
+    try {
+      // Format the form data to match the API expectations
+      const apiData = {
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        eventDate: formData.eventDate ? formData.eventDate.toISOString() : null,
+        eventType: formData.eventType || null,
+        guestCount: formData.guestCount || null,
+        location: formData.location || null,
+        message: formData.message || null,
+      };
+
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(apiData),
+      });
+
+      const result = await response.json();
+
+      if (response.ok && result.success) {
+        setSubmitStatus({
+          type: 'success',
+          message: result.message || 'Form submitted successfully!'
+        });
+      } else {
+        setSubmitStatus({
+          type: 'error',
+          message: result.error || 'Something went wrong. Please try again.'
+        });
+      }
+    } catch (error) {
+      setSubmitStatus({
+        type: 'error',
+        message: 'Network error. Please check your connection and try again.'
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const puneLocations = [
@@ -2696,6 +2762,31 @@ function ContactSection() {
             </motion.p>
           </motion.div>
 
+          {/* Status Messages */}
+          <AnimatePresence mode="wait">
+            {submitStatus.type && (
+              <motion.div
+                initial={{ opacity: 0, y: -20, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -20, scale: 0.95 }}
+                transition={{ duration: 0.3 }}
+                className={`mb-8 p-6 rounded-2xl border ${submitStatus.type === 'success'
+                    ? 'bg-green-900/20 border-green-500/30 text-green-400'
+                    : 'bg-red-900/20 border-red-500/30 text-red-400'
+                  }`}
+              >
+                <div className="flex items-center space-x-3">
+                  {submitStatus.type === 'success' ? (
+                    <CheckCircle className="w-6 h-6 flex-shrink-0" />
+                  ) : (
+                    <XCircle className="w-6 h-6 flex-shrink-0" />
+                  )}
+                  <p className="font-medium">{submitStatus.message}</p>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
 
             {/* Contact Info Cards */}
@@ -2792,6 +2883,7 @@ function ContactSection() {
                         className="bg-white/10 border-white/20 text-white placeholder-stone-400 focus:border-amber-400 focus:ring-amber-400/50 rounded-xl h-12"
                         placeholder="Your full name"
                         required
+                        disabled={isSubmitting}
                       />
                     </motion.div>
 
@@ -2815,6 +2907,7 @@ function ContactSection() {
                         className="bg-white/10 border-white/20 text-white placeholder-stone-400 focus:border-amber-400 focus:ring-amber-400/50 rounded-xl h-12"
                         placeholder="your@email.com"
                         required
+                        disabled={isSubmitting}
                       />
                     </motion.div>
                   </div>
@@ -2841,6 +2934,7 @@ function ContactSection() {
                         className="bg-white/10 border-white/20 text-white placeholder-stone-400 focus:border-amber-400 focus:ring-amber-400/50 rounded-xl h-12"
                         placeholder="+91 XXXXX XXXXX"
                         required
+                        disabled={isSubmitting}
                       />
                     </motion.div>
 
@@ -2859,6 +2953,7 @@ function ContactSection() {
                           <Button
                             variant="outline"
                             className="w-full h-12 bg-white/10 border-white/20 text-white hover:bg-white/20 focus:border-amber-400 rounded-xl justify-start font-normal"
+                            disabled={isSubmitting}
                           >
                             <Calendar className="mr-2 h-4 w-4" />
                             {formData.eventDate ? format(formData.eventDate, "PPP") : "Select event date"}
@@ -2886,7 +2981,10 @@ function ContactSection() {
                       transition={{ duration: 0.5, delay: 1.6 }}
                     >
                       <Label className="text-amber-300 font-medium">Event Type</Label>
-                      <Select onValueChange={(value) => setFormData({ ...formData, eventType: value })}>
+                      <Select
+                        onValueChange={(value) => setFormData({ ...formData, eventType: value })}
+                        disabled={isSubmitting}
+                      >
                         <SelectTrigger className="w-full h-12 bg-white/10 border-white/20 text-white focus:border-amber-400 rounded-xl">
                           <SelectValue placeholder="Select event type" />
                         </SelectTrigger>
@@ -2908,7 +3006,10 @@ function ContactSection() {
                         <MapPin className="w-4 h-4" />
                         <span>Location in Pune</span>
                       </Label>
-                      <Select onValueChange={(value) => setFormData({ ...formData, location: value })}>
+                      <Select
+                        onValueChange={(value) => setFormData({ ...formData, location: value })}
+                        disabled={isSubmitting}
+                      >
                         <SelectTrigger className="w-full h-12 bg-white/10 border-white/20 text-white focus:border-amber-400 rounded-xl">
                           <SelectValue placeholder="Select your area" />
                         </SelectTrigger>
@@ -2942,6 +3043,7 @@ function ContactSection() {
                       onBlur={() => setFocusedField(null)}
                       className="bg-white/10 border-white/20 text-white placeholder-stone-400 focus:border-amber-400 focus:ring-amber-400/50 rounded-xl h-12"
                       placeholder="Number of guests expected"
+                      disabled={isSubmitting}
                     />
                   </motion.div>
 
@@ -2963,6 +3065,7 @@ function ContactSection() {
                       onBlur={() => setFocusedField(null)}
                       className="bg-white/10 border-white/20 text-white placeholder-stone-400 focus:border-amber-400 focus:ring-amber-400/50 rounded-xl min-h-[120px] resize-none"
                       placeholder="Share your dietary requirements, special requests, theme preferences, or any specific needs for your event..."
+                      disabled={isSubmitting}
                     />
                   </motion.div>
 
@@ -2975,7 +3078,7 @@ function ContactSection() {
                   >
                     <Button
                       type="submit"
-                      disabled={isSubmitting}
+                      disabled={isSubmitting || submitStatus.type === 'success'}
                       className="w-full h-14 bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white font-semibold text-lg rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50"
                     >
                       {isSubmitting ? (
@@ -2986,6 +3089,13 @@ function ContactSection() {
                         >
                           <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                           <span>Sending Request...</span>
+                        </motion.div>
+                      ) : submitStatus.type === 'success' ? (
+                        <motion.div
+                          className="flex items-center space-x-2"
+                        >
+                          <CheckCircle className="w-5 h-5" />
+                          <span>Request Sent Successfully!</span>
                         </motion.div>
                       ) : (
                         <motion.div

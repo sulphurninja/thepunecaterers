@@ -5,9 +5,9 @@ const SchemaMarkup = () => {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
     "name": "Pune Caterers",
-    "image": "https://punecaterers.com/logo.jpg",
+    "image": "https://thepunecaterers.com/logo.jpg",
     "@id": "",
-    "url": "https://punecaterers.com",
+    "url": "https://thepunecaterers.com",
     "telephone": "+91-8087889252",
     "priceRange": "$$",
     "address": {

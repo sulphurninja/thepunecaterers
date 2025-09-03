@@ -320,11 +320,13 @@ export default function ContactUs() {
         setFormData={setFormData}
         focusedField={focusedField}
         setFocusedField={setFocusedField}
-        handleSubmit={handleSubmit}
+        handleSubmit={() => {}} // Remove this line since we're handling it internally now
         isSubmitting={isSubmitting}
+        setIsSubmitting={setIsSubmitting} // Add this prop
         puneLocations={puneLocations}
         eventTypes={eventTypes}
       />
+
 
       {/* Contact Information Section */}
       <ContactInfoSection />

@@ -49,7 +49,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
       follow: true,
     },
     alternates: {
-      canonical: `https://punecaterers.com/locations/${locationData.slug}`,
+      canonical: `https://thepunecaterers.com/locations/${locationData.slug}`,
     }
   }
 }
@@ -71,8 +71,8 @@ export default function LocationLayout({ children, params }: LocationLayoutProps
             "@context": "https://schema.org",
             "@type": "LocalBusiness",
             "name": `Pune Caterers - ${locationData.name}`,
-            "image": "https://punecaterers.com/logo.jpg",
-            "url": `https://punecaterers.com/locations/${locationData.slug}`,
+            "image": "https://thepunecaterers.com/logo.jpg",
+            "url": `https://thepunecaterers.com/locations/${locationData.slug}`,
             "telephone": "+91-8087889252",
             "priceRange": "$$",
             "address": {

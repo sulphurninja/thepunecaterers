@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     follow: true,
   },
   alternates: {
-    canonical: 'https://punecaterers.com/contact-us',
+    canonical: 'https://thepunecaterers.com/contact-us',
   }
 }
 
@@ -41,9 +41,9 @@ export default function ContactLayout({
             "@context": "https://schema.org",
             "@type": "LocalBusiness",
             "name": "Pune Caterers",
-            "image": "https://punecaterers.com/logo.jpg",
+            "image": "https://thepunecaterers.com/logo.jpg",
             "@id": "",
-            "url": "https://punecaterers.com/contact-us",
+            "url": "https://thepunecaterers.com/contact-us",
             "telephone": "+91-8087889252",
             "priceRange": "$$",
             "address": {

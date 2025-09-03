@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
-import { motion, useScroll, useTransform, useInView } from "framer-motion";
+import { motion, useScroll, useTransform, useInView, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { eventsData, type EventData } from "@/data/events";
 import {
@@ -1076,6 +1076,8 @@ function StatsSection() {
 }
 
 // Contact CTA
+// Find and replace the ContactCTA function with this updated version:
+
 function ContactCTA({
     formData,
     setFormData,
@@ -1096,14 +1098,86 @@ function ContactCTA({
     const ref = useRef(null);
     const isInView = useInView(ref, { once: true, margin: "-100px" });
 
+    // Add these state variables
+    const [submitStatus, setSubmitStatus] = useState<{
+        type: 'success' | 'error' | null;
+        message: string;
+    }>({ type: null, message: '' });
+
+    // Add local state for submitting
+    const [localIsSubmitting, setLocalIsSubmitting] = useState(false);
+
+    // Update the handleSubmit function
+    const handleFormSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setLocalIsSubmitting(true);
+        setSubmitStatus({ type: null, message: '' });
+
+        try {
+            // Format the form data to match the API expectations
+            const apiData = {
+                name: formData.name,
+                email: formData.email,
+                phone: formData.phone,
+                eventDate: formData.eventDate ? formData.eventDate.toISOString() : null,
+                eventType: formData.eventType || null,
+                guestCount: formData.guestCount || null,
+                location: formData.location || null,
+                message: formData.message || null,
+            };
+
+            const response = await fetch('/api/contact', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(apiData),
+            });
+
+            const result = await response.json();
+
+            if (response.ok && result.success) {
+                setSubmitStatus({
+                    type: 'success',
+                    message: result.message || 'Form submitted successfully!'
+                });
+                // Reset form after successful submission
+                setTimeout(() => {
+                    setFormData({
+                        name: '',
+                        email: '',
+                        phone: '',
+                        eventDate: null,
+                        eventType: '',
+                        guestCount: '',
+                        location: '',
+                        message: ''
+                    });
+                    setSubmitStatus({ type: null, message: '' });
+                }, 5000);
+            } else {
+                setSubmitStatus({
+                    type: 'error',
+                    message: result.error || 'Something went wrong. Please try again.'
+                });
+            }
+        } catch (error) {
+            setSubmitStatus({
+                type: 'error',
+                message: 'Network error. Please check your connection and try again.'
+            });
+        } finally {
+            setLocalIsSubmitting(false);
+        }
+    };
+
     return (
         <section id="contact" ref={ref} className="py-24 bg-gradient-to-br from-stone-900 via-purple-900 to-pink-900 relative overflow-hidden">
 
-            {/* Enhanced Background Effects */}
+            {/* Enhanced Background Effects - keep existing */}
             <div className="absolute inset-0">
-                {/* Animated Grid Pattern */}
                 <motion.div
-                    className="absolute inset-0 opacity-5"
+                className="absolute inset-0 opacity-5"
                     style={{
                         backgroundImage: `linear-gradient(rgba(168, 85, 247, 0.1) 1px, transparent 1px),
                              linear-gradient(90deg, rgba(168, 85, 247, 0.1) 1px, transparent 1px)`,
@@ -1115,7 +1189,6 @@ function ContactCTA({
                     transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
                 />
 
-                {/* Floating Orbs */}
                 {[...Array(3)].map((_, i) => (
                     <motion.div
                         key={i}
@@ -1187,6 +1260,32 @@ function ContactCTA({
                             Get your personalized quote within 24 hours for any type of celebration.
                         </motion.p>
                     </motion.div>
+
+                    {/* Status Messages */}
+                    <AnimatePresence mode="wait">
+                        {submitStatus.type && (
+                            <motion.div
+                                initial={{ opacity: 0, y: -20, scale: 0.95 }}
+                                animate={{ opacity: 1, y: 0, scale: 1 }}
+                                exit={{ opacity: 0, y: -20, scale: 0.95 }}
+                                transition={{ duration: 0.3 }}
+                                className={`mb-8 p-6 rounded-2xl border ${
+                                    submitStatus.type === 'success'
+                                        ? 'bg-green-900/20 border-green-500/30 text-green-400'
+                                        : 'bg-red-900/20 border-red-500/30 text-red-400'
+                                }`}
+                            >
+                                <div className="flex items-center space-x-3">
+                                    {submitStatus.type === 'success' ? (
+                                        <CheckCircle className="w-6 h-6 flex-shrink-0" />
+                                    ) : (
+                                        <XCircle className="w-6 h-6 flex-shrink-0" />
+                                    )}
+                                    <p className="font-medium">{submitStatus.message}</p>
+                                </div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
 
                     <div className="grid lg:grid-cols-12 gap-12">
 
@@ -1283,7 +1382,7 @@ function ContactCTA({
                                 whileHover={{ boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)' }}
                                 transition={{ duration: 0.3 }}
                             >
-                                <form onSubmit={handleSubmit} className="space-y-6">
+                                <form onSubmit={handleFormSubmit} className="space-y-6">
 
                                     {/* Personal Details Row */}
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -1307,6 +1406,7 @@ function ContactCTA({
                                                 className="bg-white/10 border-white/20 text-white placeholder-stone-400 focus:border-purple-400 focus:ring-purple-400/50 rounded-xl h-12"
                                                 placeholder="Your full name"
                                                 required
+                                                disabled={localIsSubmitting}
                                             />
                                         </motion.div>
 
@@ -1330,6 +1430,7 @@ function ContactCTA({
                                                 className="bg-white/10 border-white/20 text-white placeholder-stone-400 focus:border-purple-400 focus:ring-purple-400/50 rounded-xl h-12"
                                                 placeholder="your@email.com"
                                                 required
+                                                disabled={localIsSubmitting}
                                             />
                                         </motion.div>
                                     </div>
@@ -1356,6 +1457,7 @@ function ContactCTA({
                                                 className="bg-white/10 border-white/20 text-white placeholder-stone-400 focus:border-purple-400 focus:ring-purple-400/50 rounded-xl h-12"
                                                 placeholder="+91 XXXXX XXXXX"
                                                 required
+                                                disabled={localIsSubmitting}
                                             />
                                         </motion.div>
 
@@ -1374,6 +1476,7 @@ function ContactCTA({
                                                     <Button
                                                         variant="outline"
                                                         className="w-full h-12 bg-white/10 border-white/20 text-white hover:bg-white/20 focus:border-purple-400 rounded-xl justify-start font-normal"
+                                                        disabled={localIsSubmitting}
                                                     >
                                                         <Calendar className="mr-2 h-4 w-4" />
                                                         {formData.eventDate ? format(formData.eventDate, "PPP") : "Select event date"}
@@ -1404,7 +1507,10 @@ function ContactCTA({
                                                 <PartyPopper className="w-4 h-4" />
                                                 <span>Event Type</span>
                                             </Label>
-                                            <Select onValueChange={(value) => setFormData({ ...formData, eventType: value })}>
+                                            <Select 
+                                                onValueChange={(value) => setFormData({ ...formData, eventType: value })}
+                                                disabled={localIsSubmitting}
+                                            >
                                                 <SelectTrigger className="w-full h-12 bg-white/10 border-white/20 text-white focus:border-purple-400 rounded-xl">
                                                     <SelectValue placeholder="Select event type" />
                                                 </SelectTrigger>
@@ -1426,7 +1532,10 @@ function ContactCTA({
                                                 <MapPin className="w-4 h-4" />
                                                 <span>Location in Pune</span>
                                             </Label>
-                                            <Select onValueChange={(value) => setFormData({ ...formData, location: value })}>
+                                            <Select 
+                                                onValueChange={(value) => setFormData({ ...formData, location: value })}
+                                                disabled={localIsSubmitting}
+                                            >
                                                 <SelectTrigger className="w-full h-12 bg-white/10 border-white/20 text-white focus:border-purple-400 rounded-xl">
                                                     <SelectValue placeholder="Select your area" />
                                                 </SelectTrigger>
@@ -1460,6 +1569,7 @@ function ContactCTA({
                                             onBlur={() => setFocusedField(null)}
                                             className="bg-white/10 border-white/20 text-white placeholder-stone-400 focus:border-purple-400 focus:ring-purple-400/50 rounded-xl h-12"
                                             placeholder="Number of guests expected"
+                                            disabled={localIsSubmitting}
                                         />
                                     </motion.div>
 
@@ -1482,6 +1592,7 @@ function ContactCTA({
                                             onBlur={() => setFocusedField(null)}
                                             className="bg-white/10 border-white/20 text-white placeholder-stone-400 focus:border-purple-400 focus:ring-purple-400/50 rounded-xl min-h-[120px] resize-none"
                                             placeholder="Share your event type, theme preferences, dietary requirements, or any specific needs for your celebration..."
+                                            disabled={localIsSubmitting}
                                         />
                                     </motion.div>
 
@@ -1494,10 +1605,10 @@ function ContactCTA({
                                     >
                                         <Button
                                             type="submit"
-                                            disabled={isSubmitting}
+                                            disabled={localIsSubmitting || submitStatus.type === 'success'}
                                             className="w-full h-14 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold text-lg rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50"
                                         >
-                                            {isSubmitting ? (
+                                            {localIsSubmitting ? (
                                                 <motion.div
                                                     className="flex items-center space-x-2"
                                                     animate={{ opacity: [0.5, 1, 0.5] }}
@@ -1505,6 +1616,13 @@ function ContactCTA({
                                                 >
                                                     <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                                                     <span>Sending Request...</span>
+                                                </motion.div>
+                                            ) : submitStatus.type === 'success' ? (
+                                                <motion.div
+                                                    className="flex items-center space-x-2"
+                                                >
+                                                    <CheckCircle className="w-5 h-5" />
+                                                    <span>Request Sent Successfully!</span>
                                                 </motion.div>
                                             ) : (
                                                 <motion.div

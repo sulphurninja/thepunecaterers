@@ -42,7 +42,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Best Catering Services in Pune | Weddings, Corporates & Parties",
     description: "Premier catering services in Pune by Pune Caterers. Customized menus for events across all locations like Hinjewadi, Koregaon Park. Get a free quote!",
-    url: "https://punecaterers.com",
+    url: "https://thepunecaterers.com",
     siteName: "Pune Caterers",
     images: [
       {
@@ -62,7 +62,7 @@ export const metadata: Metadata = {
     images: ["/og-image.png"],
   },
   alternates: {
-    canonical: "https://punecaterers.com",
+    canonical: "https://thepunecaterers.com",
   },
   // Add verification for Google Search Console
   verification: {
@@ -92,8 +92,8 @@ export default function RootLayout({
               "@context": "https://schema.org",
               "@type": "LocalBusiness",
               "name": "Pune Caterers",
-              "image": "https://punecaterers.com/logo.jpg",
-              "url": "https://punecaterers.com",
+              "image": "https://thepunecaterers.com/logo.jpg",
+              "url": "https://thepunecaterers.com",
               "telephone": "+91-8087889252",
               "priceRange": "$$",
               "address": {

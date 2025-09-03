@@ -50,7 +50,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
       follow: true,
     },
     alternates: {
-      canonical: `https://punecaterers.com/events/${eventData.slug}`,
+      canonical: `https://thepunecaterers.com/events/${eventData.slug}`,
     }
   }
 }
@@ -75,8 +75,8 @@ export default function EventLayout({ children, params }: EventLayoutProps) {
             "provider": {
               "@type": "LocalBusiness",
               "name": "Pune Caterers",
-              "image": "https://punecaterers.com/logo.jpg",
-              "url": "https://punecaterers.com",
+              "image": "https://thepunecaterers.com/logo.jpg",
+              "url": "https://thepunecaterers.com",
               "telephone": "+91-8087889252",
               "address": {
                 "@type": "PostalAddress",
@@ -96,7 +96,7 @@ export default function EventLayout({ children, params }: EventLayoutProps) {
               "priceRange": `₹${eventData.priceRange.starter}-₹${eventData.priceRange.premium}`,
               "priceCurrency": "INR"
             },
-            "url": `https://punecaterers.com/events/${eventData.slug}`,
+            "url": `https://thepunecaterers.com/events/${eventData.slug}`,
             "category": "Catering Service",
             "audience": {
               "@type": "Audience",
@@ -161,7 +161,7 @@ export default function EventLayout({ children, params }: EventLayoutProps) {
             "@type": "WebPage",
             "name": `${eventData.name} Catering in Pune`,
             "description": eventData.description,
-            "url": `https://punecaterers.com/events/${eventData.slug}`,
+            "url": `https://thepunecaterers.com/events/${eventData.slug}`,
             "mainEntity": {
               "@type": "Service",
               "name": `${eventData.name} Catering`,
@@ -178,19 +178,19 @@ export default function EventLayout({ children, params }: EventLayoutProps) {
                   "@type": "ListItem",
                   "position": 1,
                   "name": "Home",
-                  "item": "https://punecaterers.com"
+                  "item": "https://thepunecaterers.com"
                 },
                 {
                   "@type": "ListItem",
                   "position": 2,
                   "name": "Events",
-                  "item": "https://punecaterers.com/events"
+                  "item": "https://thepunecaterers.com/events"
                 },
                 {
                   "@type": "ListItem",
                   "position": 3,
                   "name": eventData.name,
-                  "item": `https://punecaterers.com/events/${eventData.slug}`
+                  "item": `https://thepunecaterers.com/events/${eventData.slug}`
                 }
               ]
             }

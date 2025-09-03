@@ -2,8 +2,8 @@
 
 import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
-import { motion, useScroll, useTransform, useInView } from "framer-motion";
-import { Calendar, CalendarDays, Mail, MapPin, Phone, Send, Users, Heart, Leaf, Star, Rocket, Sparkles } from "lucide-react";
+import { motion, useScroll, useTransform, useInView, AnimatePresence } from "framer-motion";
+import { Calendar, CalendarDays, Mail, MapPin, Phone, Send, Users, Heart, Leaf, Star, Rocket, Sparkles, CheckCircle, XCircle } from "lucide-react";
 import { format } from "date-fns";
 import {
   Select,
@@ -1297,7 +1297,7 @@ function FAQSection({ openFAQ, setOpenFAQ }) {
   );
 }
 
-// Enhanced Contact Section with Shadcn Components
+// Update ContactSection function
 function ContactSection({
   formData,
   setFormData,
@@ -1309,7 +1309,65 @@ function ContactSection({
   eventTypes
 }) {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true });
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
+
+  // Add email functionality state
+  const [localIsSubmitting, setLocalIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<{
+    type: 'success' | 'error' | null;
+    message: string;
+  }>({ type: null, message: '' });
+
+  const handleFormSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLocalIsSubmitting(true);
+    setSubmitStatus({ type: null, message: '' });
+
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...formData,
+          eventDate: formData.eventDate ? format(formData.eventDate, 'yyyy-MM-dd') : '',
+          source: 'About Page',
+          pageUrl: window.location.href
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setSubmitStatus({
+          type: 'success',
+          message: 'Thank you! Your message has been sent successfully. We\'ll get back to you within 24 hours.'
+        });
+        // Reset form
+        setFormData({
+          name: '',
+          email: '',
+          phone: '',
+          eventDate: null,
+          guestCount: '',
+          location: '',
+          eventType: '',
+          message: ''
+        });
+      } else {
+        throw new Error(data.error || 'Failed to send message');
+      }
+    } catch (error) {
+      console.error('Contact form error:', error);
+      setSubmitStatus({
+        type: 'error',
+        message: 'Sorry, there was an error sending your message. Please try again or call us directly at +91-8087889252.'
+      });
+    } finally {
+      setLocalIsSubmitting(false);
+    }
+  };
 
   return (
     <section ref={ref} className="py-16 md:py-32 bg-gradient-to-b from-stone-900 to-black relative overflow-hidden">
@@ -1401,6 +1459,30 @@ function ContactSection({
               Share details for a free consultation and personalized quote.
             </motion.p>
           </motion.div>
+          {/* Status Messages */}
+          <AnimatePresence mode="wait">
+            {submitStatus.type && (
+              <motion.div
+                initial={{ opacity: 0, y: -20, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -20, scale: 0.95 }}
+                transition={{ duration: 0.3 }}
+                className={`mb-8 p-6 rounded-2xl border ${submitStatus.type === 'success'
+                  ? 'bg-green-900/20 border-green-500/30 text-green-400'
+                  : 'bg-red-900/20 border-red-500/30 text-red-400'
+                  }`}
+              >
+                <div className="flex items-center space-x-3">
+                  {submitStatus.type === 'success' ? (
+                    <CheckCircle className="w-6 h-6 flex-shrink-0" />
+                  ) : (
+                    <XCircle className="w-6 h-6 flex-shrink-0" />
+                  )}
+                  <p className="font-medium">{submitStatus.message}</p>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
 
@@ -1474,10 +1556,11 @@ function ContactSection({
                 whileHover={{ boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)' }}
                 transition={{ duration: 0.3 }}
               >
-                <form onSubmit={handleSubmit} className="space-y-6">
+                <form onSubmit={handleFormSubmit} className="space-y-6">
 
                   {/* Personal Details Row */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* Name Field */}
                     <motion.div
                       className="space-y-2"
                       initial={{ opacity: 0, y: 20 }}
@@ -1498,9 +1581,11 @@ function ContactSection({
                         className="bg-white/10 border-white/20 text-white placeholder-stone-400 focus:border-amber-400 focus:ring-amber-400/50 rounded-xl h-12"
                         placeholder="Your full name"
                         required
+                        disabled={localIsSubmitting || submitStatus.type === 'success'}
                       />
                     </motion.div>
 
+                    {/* Email Field */}
                     <motion.div
                       className="space-y-2"
                       initial={{ opacity: 0, y: 20 }}
@@ -1521,12 +1606,14 @@ function ContactSection({
                         className="bg-white/10 border-white/20 text-white placeholder-stone-400 focus:border-amber-400 focus:ring-amber-400/50 rounded-xl h-12"
                         placeholder="your@email.com"
                         required
+                        disabled={localIsSubmitting || submitStatus.type === 'success'}
                       />
                     </motion.div>
                   </div>
 
                   {/* Contact & Event Details Row */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* Phone Field */}
                     <motion.div
                       className="space-y-2"
                       initial={{ opacity: 0, y: 20 }}
@@ -1547,9 +1634,11 @@ function ContactSection({
                         className="bg-white/10 border-white/20 text-white placeholder-stone-400 focus:border-amber-400 focus:ring-amber-400/50 rounded-xl h-12"
                         placeholder="+91 XXXXX XXXXX"
                         required
+                        disabled={localIsSubmitting || submitStatus.type === 'success'}
                       />
                     </motion.div>
 
+                    {/* Event Date */}
                     <motion.div
                       className="space-y-2"
                       initial={{ opacity: 0, y: 20 }}
@@ -1565,6 +1654,7 @@ function ContactSection({
                           <Button
                             variant="outline"
                             className="w-full h-12 bg-white/10 border-white/20 text-white hover:bg-white/20 focus:border-amber-400 rounded-xl justify-start font-normal"
+                            disabled={localIsSubmitting || submitStatus.type === 'success'}
                           >
                             <Calendar className="mr-2 h-4 w-4" />
                             {formData.eventDate ? format(formData.eventDate, "PPP") : "Select event date"}
@@ -1585,6 +1675,7 @@ function ContactSection({
 
                   {/* Event Type & Location Row */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* Event Type */}
                     <motion.div
                       className="space-y-2"
                       initial={{ opacity: 0, y: 20 }}
@@ -1592,7 +1683,10 @@ function ContactSection({
                       transition={{ duration: 0.5, delay: 1.6 }}
                     >
                       <Label className="text-amber-300 font-medium">Event Type</Label>
-                      <Select onValueChange={(value) => setFormData({ ...formData, eventType: value })}>
+                      <Select
+                        onValueChange={(value) => setFormData({ ...formData, eventType: value })}
+                        disabled={localIsSubmitting || submitStatus.type === 'success'}
+                      >
                         <SelectTrigger className="w-full h-12 bg-white/10 border-white/20 text-white focus:border-amber-400 rounded-xl">
                           <SelectValue placeholder="Select event type" />
                         </SelectTrigger>
@@ -1604,6 +1698,7 @@ function ContactSection({
                       </Select>
                     </motion.div>
 
+                    {/* Location */}
                     <motion.div
                       className="space-y-2"
                       initial={{ opacity: 0, y: 20 }}
@@ -1614,7 +1709,10 @@ function ContactSection({
                         <MapPin className="w-4 h-4" />
                         <span>Location in Pune</span>
                       </Label>
-                      <Select onValueChange={(value) => setFormData({ ...formData, location: value })}>
+                      <Select
+                        onValueChange={(value) => setFormData({ ...formData, location: value })}
+                        disabled={localIsSubmitting || submitStatus.type === 'success'}
+                      >
                         <SelectTrigger className="w-full h-12 bg-white/10 border-white/20 text-white focus:border-amber-400 rounded-xl">
                           <SelectValue placeholder="Select your area" />
                         </SelectTrigger>
@@ -1648,6 +1746,7 @@ function ContactSection({
                       onBlur={() => setFocusedField(null)}
                       className="bg-white/10 border-white/20 text-white placeholder-stone-400 focus:border-amber-400 focus:ring-amber-400/50 rounded-xl h-12"
                       placeholder="Number of guests expected"
+                      disabled={localIsSubmitting || submitStatus.type === 'success'}
                     />
                   </motion.div>
 
@@ -1669,6 +1768,7 @@ function ContactSection({
                       onBlur={() => setFocusedField(null)}
                       className="bg-white/10 border-white/20 text-white placeholder-stone-400 focus:border-amber-400 focus:ring-amber-400/50 rounded-xl min-h-[120px] resize-none"
                       placeholder="Share your dietary requirements, special requests, theme preferences, or any specific needs for your event..."
+                      disabled={localIsSubmitting || submitStatus.type === 'success'}
                     />
                   </motion.div>
 
@@ -1681,10 +1781,10 @@ function ContactSection({
                   >
                     <Button
                       type="submit"
-                      disabled={isSubmitting}
+                      disabled={localIsSubmitting || submitStatus.type === 'success'}
                       className="w-full h-14 bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white font-semibold text-lg rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50"
                     >
-                      {isSubmitting ? (
+                      {localIsSubmitting ? (
                         <motion.div
                           className="flex items-center space-x-2"
                           animate={{ opacity: [0.5, 1, 0.5] }}
@@ -1692,6 +1792,11 @@ function ContactSection({
                         >
                           <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                           <span>Sending Request...</span>
+                        </motion.div>
+                      ) : submitStatus.type === 'success' ? (
+                        <motion.div className="flex items-center space-x-2">
+                          <CheckCircle className="w-5 h-5" />
+                          <span>Request Sent Successfully!</span>
                         </motion.div>
                       ) : (
                         <motion.div
