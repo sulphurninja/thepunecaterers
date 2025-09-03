@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-// import { GoogleAnalytics } from '@next/third-parties/google'
 import "./globals.css";
 import FloatingButtons from "@/components/FloatingButtons";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
@@ -23,7 +22,6 @@ export const metadata: Metadata = {
   creator: "Pune Caterers",
   publisher: "Pune Caterers",
   robots: "index, follow",
-  // Favicon and icon metadata
   icons: {
     icon: [
       { url: '/favicon.ico', sizes: 'any' },
@@ -64,6 +62,9 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "https://thepunecaterers.com",
   },
+  verification: {
+    google: "your-search-console-verification-code",
+  },
 };
 
 export default function RootLayout({
@@ -74,7 +75,6 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        {/* Additional favicon links for better compatibility */}
         <link rel="icon" href="/favicon.ico" sizes="any" />
         <link rel="icon" href="/favicon-16x16.png" sizes="16x16" type="image/png" />
         <link rel="icon" href="/favicon-32x32.png" sizes="32x32" type="image/png" />
@@ -115,16 +115,10 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         {children}
-        {/* Floating Action Buttons */}
         <FloatingButtons />
         <FloatingWhatsApp />
-        
-        {/* Google Analytics */}
-        {/* <GoogleAnalytics gaId="G-TD921S7MW4" /> */}
       </body>
     </html>
   );
