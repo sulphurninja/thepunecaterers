@@ -29,6 +29,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import ContactFormDialog from "@/components/ContactFormDialog";
 
 interface EventPageProps {
   params: {
@@ -280,6 +281,17 @@ function HeroSection({
   heroImageScale: any;
   isLoaded: boolean;
 }) {
+
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [contactDialogProps, setContactDialogProps] = useState({
+    defaultEventType: "",
+    title: "Get Your Free Quote"
+  });
+
+  const openContactDialog = (eventType = "", title = "Get Your Free Quote") => {
+    setContactDialogProps({ defaultEventType: eventType, title });
+  };
+
   return (
     <section ref={heroRef} className="relative md:mt-24 min-h-screen flex items-center pt-12 overflow-hidden">
       {/* Enhanced Background */}
@@ -355,6 +367,14 @@ function HeroSection({
               </h1>
             </motion.div>
 
+            <ContactFormDialog
+              isOpen={isDialogOpen}
+              onClose={() => setIsDialogOpen(false)} // <-- Close dialog
+              defaultEventType={contactDialogProps.defaultEventType}
+              title={eventData.fullName}
+            />
+
+
             <motion.p
               className="text-lg text-stone-600 leading-relaxed max-w-4xl mx-auto"
               initial={{ opacity: 0, y: 20 }}
@@ -377,6 +397,8 @@ function HeroSection({
                   className="bg-gradient-to-r from-pink-600 to-rose-600 text-white px-8 py-4 rounded-2xl font-medium relative overflow-hidden group inline-flex items-center justify-center space-x-2"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
+                 
+
                 >
                   <motion.div
                     className="absolute inset-0 bg-gradient-to-r from-pink-700 to-rose-700"
@@ -399,6 +421,8 @@ function HeroSection({
                 }}
                 whileTap={{ scale: 0.98 }}
                 transition={{ duration: 0.2 }}
+                onClick={() => {setIsDialogOpen(true) // <-- Open dialog
+                openContactDialog("","Book Your Baby Shower")     } } 
               >
                 <Phone className="w-4 h-4" />
                 <span>Call Now</span>
@@ -743,6 +767,16 @@ function MenuShowcase({ eventData }: { eventData: EventData }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [contactDialogProps, setContactDialogProps] = useState({
+    defaultEventType: "",
+    title: "Get Your Free Quote"
+  });
+
+  const openContactDialog = (eventType = "", title = "Get Your Free Quote") => {
+    setContactDialogProps({ defaultEventType: eventType, title }); 
+ };
+
   return (
     <section ref={ref} className="py-20 bg-gradient-to-b from-stone-50 to-pink-50">
       <div className="container mx-auto px-6">
@@ -809,6 +843,14 @@ function MenuShowcase({ eventData }: { eventData: EventData }) {
             ))}
           </div>
 
+          <ContactFormDialog
+                                    isOpen={isDialogOpen}
+                                    onClose={() => setIsDialogOpen(false)} // <-- Close dialog
+                                    defaultEventType={contactDialogProps.defaultEventType}
+                                    title={contactDialogProps.title}
+          />
+
+
           {/* CTA */}
           <motion.div
             className="text-center mt-12"
@@ -820,6 +862,9 @@ function MenuShowcase({ eventData }: { eventData: EventData }) {
               className="bg-gradient-to-r from-pink-600 to-rose-600 text-white px-8 py-4 rounded-2xl font-medium inline-flex items-center space-x-2 shadow-lg hover:shadow-xl transition-all duration-300"
               whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.95 }}
+              onClick={() => {setIsDialogOpen(true) // <-- Open dialog
+                openContactDialog("","Contact and Customize Menu")     } } 
+
             >
               <Utensils className="w-5 h-5" />
               <span>Customize Your Menu</span>
