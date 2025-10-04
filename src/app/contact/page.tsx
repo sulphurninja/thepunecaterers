@@ -23,6 +23,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
+import ContactFormDialog from "@/components/ContactFormDialog";
 
 export default function ContactUs() {
   const [scrollY, setScrollY] = useState(0);
@@ -41,6 +42,7 @@ export default function ContactUs() {
   });
   const [focusedField, setFocusedField] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const heroRef = useRef(null);
   const { scrollYProgress } = useScroll({
@@ -100,7 +102,7 @@ export default function ContactUs() {
         transition={{ duration: 0.8, delay: 0.5 }}
         className="fixed top-8 left-1/2 transform -translate-x-1/2 z-50"
       >
-        
+
       </motion.nav>  {/* Floating Navigation with Working Mobile Menu */}
       <motion.nav
         initial={{ opacity: 0, y: -20 }}
@@ -320,7 +322,7 @@ export default function ContactUs() {
         setFormData={setFormData}
         focusedField={focusedField}
         setFocusedField={setFocusedField}
-        handleSubmit={() => {}} // Remove this line since we're handling it internally now
+        handleSubmit={() => { }} // Remove this line since we're handling it internally now
         isSubmitting={isSubmitting}
         setIsSubmitting={setIsSubmitting} // Add this prop
         puneLocations={puneLocations}
@@ -1414,7 +1416,7 @@ function MapSection() {
 function FAQSection({ openFAQ, setOpenFAQ }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
-
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const faqs = [
     {
       q: "How quickly will I get a response?",
@@ -1522,23 +1524,28 @@ function FAQSection({ openFAQ, setOpenFAQ }) {
             </motion.div>
           ))}
         </div>
-
+        <ContactFormDialog
+          isOpen={isDialogOpen}
+          onClose={() => setIsDialogOpen(false)} // <-- Close dialog
+          title="Plan Your Event With Us"
+          defaultEventType="Wedding"
+        />
         <motion.div
           className="text-center mt-8"
           initial={{ opacity: 0 }}
           animate={isInView ? { opacity: 1 } : {}}
           transition={{ duration: 0.6, delay: 1 }}
         >
-          <motion.a
-            href="#"
+          <motion.h1
             className="text-amber-800 font-medium flex items-center justify-center space-x-2 hover:text-amber-600 transition-colors"
             whileHover={{ scale: 1.05 }}
+            onClick={() => setIsDialogOpen(true)}
           >
-            <span>Ask a Question</span>
+            <span className="cursor-pointer">Ask a Question</span>
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-          </motion.a>
+          </motion.h1>
         </motion.div>
       </div>
     </section>
