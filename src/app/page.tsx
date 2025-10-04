@@ -327,6 +327,7 @@ export default function Home() {
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => openContactDialog()}
+                  
                 >
                   <span>Get a Free Quote Now</span>
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -728,7 +729,6 @@ function AboutSection({ openContactDialog }) {
   );
 }
 
-// Services Section with Professional Icons
 function ServicesSection({ openContactDialog }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
@@ -747,63 +747,64 @@ function ServicesSection({ openContactDialog }) {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-16 items-stretch">
           {/* Full-Service Card */}
+      
           <motion.div
             className="group relative"
-            initial={{ opacity: 0, y: 50, rotateY: -10 }}
+            initial={{ opacity: 0, y: 50, rotateY: 10 }}
             animate={isInView ? { opacity: 1, y: 0, rotateY: 0 } : {}}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            whileHover={{ rotateY: 2, scale: 1.02 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+            whileHover={{ rotateY: -2, scale: 1.02 }}
             style={{ transformStyle: "preserve-3d" }}
           >
             <motion.div
               className="absolute inset-0 bg-white rounded-3xl shadow-2xl"
-              whileHover={{ rotateZ: 1 }}
+              whileHover={{ rotateZ: -1 }}
               transition={{ type: "spring", stiffness: 300 }}
             />
             <div className="relative bg-white rounded-3xl p-8 md:p-12 overflow-hidden">
               <motion.div
-                className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-amber-300 to-orange-400 rounded-full opacity-10"
-                initial={{ scale: 0, x: 50, y: -50 }}
-                animate={isInView ? { scale: 1, x: 32, y: -32 } : {}}
-                transition={{ duration: 1, delay: 0.5 }}
+                className="absolute top-0 left-0 w-32 h-32 bg-gradient-to-br from-orange-300 to-red-400 rounded-full opacity-10"
+                initial={{ scale: 0, x: -50, y: -50 }}
+                animate={isInView ? { scale: 1, x: -32, y: -32 } : {}}
+                transition={{ duration: 1, delay: 0.7 }}
               />
 
               {/* Service Icon */}
               <motion.div
-                className="w-16 h-16 bg-amber-100 rounded-2xl flex items-center justify-center mb-6"
+                className="w-16 h-16 bg-orange-100 rounded-2xl flex items-center justify-center mb-6"
                 initial={{ scale: 0 }}
                 animate={isInView ? { scale: 1 } : {}}
-                transition={{ duration: 0.6, delay: 0.4 }}
+                transition={{ duration: 0.6, delay: 0.6 }}
               >
-                <svg className="w-8 h-8 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                <svg className="w-8 h-8 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                 </svg>
               </motion.div>
 
               <motion.h3
                 className="font-serif text-2xl md:text-3xl mb-6 text-stone-800"
-                initial={{ opacity: 0, x: -30 }}
+                initial={{ opacity: 0, x: 30 }}
                 animate={isInView ? { opacity: 1, x: 0 } : {}}
-                transition={{ duration: 0.6, delay: 0.4 }}
+                transition={{ duration: 0.6, delay: 0.6 }}
               >
-                Full-Service Catering
+                 Full-Service Catering
               </motion.h3>
 
               <motion.p
                 className="text-stone-600 mb-8 leading-relaxed"
                 initial={{ opacity: 0 }}
                 animate={isInView ? { opacity: 1 } : {}}
-                transition={{ duration: 0.6, delay: 0.6 }}
+                transition={{ duration: 0.6, delay: 0.8 }}
               >
-                Our end-to-end full-service catering handles planning, setup, serving, and cleanup,
-                incorporating 2025 trends like sustainable sourcing for eco-conscious areas such as Baner's green zones.
+               Our end-to-end full-service catering handles planning, setup, serving, and cleanup,
+               incorporating 2025 trends like sustainable sourcing for eco-conscious areas such as Baner's green zones.
               </motion.p>
 
               <motion.div
                 className="space-y-3 mb-8"
                 initial={{ opacity: 0 }}
                 animate={isInView ? { opacity: 1 } : {}}
-                transition={{ duration: 0.6, delay: 0.8 }}
+                transition={{ duration: 0.6, delay: 1 }}
               >
                 {[
                   "Complete management, personalized menus, staff, cleanup",
@@ -813,12 +814,12 @@ function ServicesSection({ openContactDialog }) {
                   <motion.div
                     key={i}
                     className="flex items-center text-sm text-stone-600"
-                    initial={{ opacity: 0, x: -20 }}
+                    initial={{ opacity: 0, x: 20 }}
                     animate={isInView ? { opacity: 1, x: 0 } : {}}
-                    transition={{ duration: 0.4, delay: 1 + i * 0.1 }}
+                    transition={{ duration: 0.4, delay: 1.2 + i * 0.1 }}
                   >
                     <motion.div
-                      className="w-2 h-2 bg-amber-400 rounded-full mr-3"
+                      className="w-2 h-2 bg-orange-400 rounded-full mr-3"
                       whileHover={{ scale: 1.5 }}
                       transition={{ type: "spring", stiffness: 400 }}
                     />
@@ -828,19 +829,18 @@ function ServicesSection({ openContactDialog }) {
               </motion.div>
 
               <motion.button
-                className="bg-amber-800 text-white px-6 py-3 rounded-full relative overflow-hidden"
+                className="bg-orange-600 text-white px-6 py-3 rounded-full relative overflow-hidden"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 initial={{ opacity: 0, y: 20 }}
                 animate={isInView ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.6, delay: 1.2 }}
-                onClick={() => openContactDialog("Full-Service Catering", "Get Full-Service Catering Quote")}
+                transition={{ duration: 0.6, delay: 1.4 }}
+                onClick={() => openContactDialog("Buffet-Style Catering", "Get full-Service Catering Quote")}
               >
                 <motion.div
-                  className="absolute inset-0 bg-amber-900"
-                  initial={{ x: "-100%" }}
+                  className="absolute inset-0 bg-orange-700"
+                  initial={{ x: "100%" }}
                   whileHover={{ x: "0%" }}
-                  onClick={() => openContactDialog("Full-Service Catering", "Get Full-Service Catering Quote")}
                   transition={{ duration: 0.3 }}
                 />
                 <span className="relative">Learn More</span>

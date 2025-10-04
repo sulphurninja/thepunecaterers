@@ -45,7 +45,7 @@ export default function ContactFormDialog({
     name: '',
     email: '',
     phone: '',
-    eventDate: null,
+    eventDate: null as Date | null,
     guestCount: '',
     location: '',
     eventType: defaultEventType,
@@ -136,10 +136,11 @@ export default function ContactFormDialog({
           type: 'success',
           message: result.message || 'Form submitted successfully!'
         });
-      } else {
+      } 
+      else {
         setSubmitStatus({
           type: 'error',
-          message: result.error || 'Something went wrong. Please try again.'
+          message: result.error || 'Error in sumbitting form. Please try again.'
         });
       }
     } catch (error) {
@@ -153,7 +154,14 @@ export default function ContactFormDialog({
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+<Dialog
+  open={isOpen}
+  onOpenChange={(open) => {
+    if (!open) {
+      onClose();
+    }
+  }}
+>
       <DialogContent className="max-w-6xl max-h-screen h-fit overflow-y-auto  bg-gradient-to-br from-stone-900 to-black border border-amber-400/20">
         <DialogHeader className="pb-6">
           <DialogTitle className="text-center">

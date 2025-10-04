@@ -29,6 +29,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import ContactFormDialog from "@/components/ContactFormDialog";
+
+
 
 export default function EventsPage() {
     const [isLoaded, setIsLoaded] = useState(false);
@@ -55,6 +58,17 @@ export default function EventsPage() {
 
     const heroImageScale = useTransform(scrollYProgress, [0, 1], [1, 1.15]);
     const heroTextY = useTransform(scrollYProgress, [0, 1], [0, -80]);
+    const [isContactDialogOpen, setIsContactDialogOpen] = useState(false);
+    const [contactDialogProps, setContactDialogProps] = useState({
+        defaultEventType: "",
+        title: "Get Your Free Quote"
+    });
+
+    // Function to open contact dialog with specific props
+    const openContactDialog = (eventType = "", title = "Get Your Free Quote") => {
+        setContactDialogProps({ defaultEventType: eventType, title });
+        setIsContactDialogOpen(true);
+    };
 
     const locations = [
         "Chinchwad", "Wakad", "Kothrud", "Wagholi", "Kondhwa",
@@ -246,7 +260,7 @@ export default function EventsPage() {
                 isSubmitting={isSubmitting}
                 locations={locations}
             />
-            <FooterSection/>
+            <FooterSection />
         </div>
     );
 }
@@ -301,230 +315,242 @@ function Navigation({ isLoaded }: { isLoaded: boolean }) {
 }
 // Footer Section with Professional Icons
 function FooterSection() {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true });
+    const ref = useRef(null);
+    const isInView = useInView(ref, { once: true });
 
-  return (
-    <footer ref={ref} className="bg-stone-900 text-white py-12 md:py-16">
-      <div className="container mx-auto px-4 md:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+    return (
+        <footer ref={ref} className="bg-stone-900 text-white py-12 md:py-16">
+            <div className="container mx-auto px-4 md:px-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
 
-          {/* Events Column */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.6, delay: 0.1 }}
-          >
-            <motion.div
-              className="flex items-center space-x-3 mb-4"
-              whileHover={{ x: 2 }}
-              transition={{ type: "spring", stiffness: 400 }}
-            >
-              <svg className="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-              <h4 className="font-serif text-lg text-amber-400">Events</h4>
-            </motion.div>
-            <ul className="space-y-2 text-sm">
-              {[
-                { name: "Wedding", link: "/events/wedding" },
-                { name: "Birthday", link: "/events/birthday-party" },
-                { name: "Corporate", link: "/events/corporate" },
-                { name: "Small Party", link: "/events/small-party" },
-                { name: "Engagement", link: "/events/engagement" },
-                { name: "Baby Shower", link: "/events/baby-shower" },
-                { name: "Housewarming", link: "/events/housewarming" },
-                { name: "Festival & Religious", link: "/events/festival-religious" },
-                { name: "Private Party", link: "/events/private-party" }
-              ].map((event, i) => (
-                <motion.li
-                  key={i}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={isInView ? { opacity: 1, x: 0 } : {}}
-                  transition={{ duration: 0.3, delay: 0.2 + i * 0.05 }}
-                >
-                  <Link href={event.link}>
+                    {/* Events Column */}
                     <motion.div
-                      className="text-stone-400 hover:text-amber-400 transition-colors cursor-pointer"
-                      whileHover={{ x: 5, color: "#fbbf24" }}
-                      transition={{ type: "spring", stiffness: 400 }}
+                        initial={{ opacity: 0, y: 30 }}
+                        animate={isInView ? { opacity: 1, y: 0 } : {}}
+                        transition={{ duration: 0.6, delay: 0.1 }}
                     >
-                      {event.name}
+                        <motion.div
+                            className="flex items-center space-x-3 mb-4"
+                            whileHover={{ x: 2 }}
+                            transition={{ type: "spring", stiffness: 400 }}
+                        >
+                            <svg className="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            <h4 className="font-serif text-lg text-amber-400">Events</h4>
+                        </motion.div>
+                        <ul className="space-y-2 text-sm">
+                            {[
+                                { name: "Wedding", link: "/events/wedding" },
+                                { name: "Birthday", link: "/events/birthday-party" },
+                                { name: "Corporate", link: "/events/corporate" },
+                                { name: "Small Party", link: "/events/small-party" },
+                                { name: "Engagement", link: "/events/engagement" },
+                                { name: "Baby Shower", link: "/events/baby-shower" },
+                                { name: "Housewarming", link: "/events/housewarming" },
+                                { name: "Festival & Religious", link: "/events/festival-religious" },
+                                { name: "Private Party", link: "/events/private-party" }
+                            ].map((event, i) => (
+                                <motion.li
+                                    key={i}
+                                    initial={{ opacity: 0, x: -10 }}
+                                    animate={isInView ? { opacity: 1, x: 0 } : {}}
+                                    transition={{ duration: 0.3, delay: 0.2 + i * 0.05 }}
+                                >
+                                    <Link href={event.link}>
+                                        <motion.div
+                                            className="text-stone-400 hover:text-amber-400 transition-colors cursor-pointer"
+                                            whileHover={{ x: 5, color: "#fbbf24" }}
+                                            transition={{ type: "spring", stiffness: 400 }}
+                                        >
+                                            {event.name}
+                                        </motion.div>
+                                    </Link>
+                                </motion.li>
+                            ))}
+                        </ul>
                     </motion.div>
-                  </Link>
-                </motion.li>
-              ))}
-            </ul>
-          </motion.div>
 
-          {/* Locations Column */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.6, delay: 0.2 }}
-          >
-            <motion.div
-              className="flex items-center space-x-3 mb-4"
-              whileHover={{ x: 2 }}
-              transition={{ type: "spring", stiffness: 400 }}
-            >
-              <svg className="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
-              <h4 className="font-serif text-lg text-amber-400">Locations</h4>
-            </motion.div>
-            <ul className="space-y-2 text-sm">
-              {[
-                { name: "Chinchwad", slug: "chinchwad" },
-                { name: "Wakad", slug: "wakad" },
-                { name: "Kothrud", slug: "kothrud" },
-                { name: "Wagholi", slug: "wagholi" },
-                { name: "Kondhwa", slug: "kondhwa" },
-                { name: "Viman Nagar", slug: "viman-nagar" },
-                { name: "Kharadi", slug: "kharadi" },
-                { name: "Baner", slug: "baner" },
-                { name: "Koregaon Park", slug: "koregaon-park" },
-                { name: "Hadapsar", slug: "hadapsar" },
-                { name: "Aundh", slug: "aundh" },
-                { name: "Wanowrie", slug: "wanowrie" },
-                { name: "Hinjewadi", slug: "hinjewadi" },
-                { name: "Yerwada", slug: "yerwada" }
-              ].map((location, i) => (
-                <motion.li
-                  key={i}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={isInView ? { opacity: 1, x: 0 } : {}}
-                  transition={{ duration: 0.3, delay: 0.3 + i * 0.05 }}
-                >
-                  <Link href={`/locations/${location.slug}`}>
+                    {/* Locations Column */}
                     <motion.div
-                      className="text-stone-400 hover:text-amber-400 transition-colors cursor-pointer"
-                      whileHover={{ x: 5, color: "#fbbf24" }}
-                      transition={{ type: "spring", stiffness: 400 }}
+                        initial={{ opacity: 0, y: 30 }}
+                        animate={isInView ? { opacity: 1, y: 0 } : {}}
+                        transition={{ duration: 0.6, delay: 0.2 }}
                     >
-                      {location.name}
+                        <motion.div
+                            className="flex items-center space-x-3 mb-4"
+                            whileHover={{ x: 2 }}
+                            transition={{ type: "spring", stiffness: 400 }}
+                        >
+                            <svg className="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                            <h4 className="font-serif text-lg text-amber-400">Locations</h4>
+                        </motion.div>
+                        <ul className="space-y-2 text-sm">
+                            {[
+                                { name: "Chinchwad", slug: "chinchwad" },
+                                { name: "Wakad", slug: "wakad" },
+                                { name: "Kothrud", slug: "kothrud" },
+                                { name: "Wagholi", slug: "wagholi" },
+                                { name: "Kondhwa", slug: "kondhwa" },
+                                { name: "Viman Nagar", slug: "viman-nagar" },
+                                { name: "Kharadi", slug: "kharadi" },
+                                { name: "Baner", slug: "baner" },
+                                { name: "Koregaon Park", slug: "koregaon-park" },
+                                { name: "Hadapsar", slug: "hadapsar" },
+                                { name: "Aundh", slug: "aundh" },
+                                { name: "Wanowrie", slug: "wanowrie" },
+                                { name: "Hinjewadi", slug: "hinjewadi" },
+                                { name: "Yerwada", slug: "yerwada" }
+                            ].map((location, i) => (
+                                <motion.li
+                                    key={i}
+                                    initial={{ opacity: 0, x: -10 }}
+                                    animate={isInView ? { opacity: 1, x: 0 } : {}}
+                                    transition={{ duration: 0.3, delay: 0.3 + i * 0.05 }}
+                                >
+                                    <Link href={`/locations/${location.slug}`}>
+                                        <motion.div
+                                            className="text-stone-400 hover:text-amber-400 transition-colors cursor-pointer"
+                                            whileHover={{ x: 5, color: "#fbbf24" }}
+                                            transition={{ type: "spring", stiffness: 400 }}
+                                        >
+                                            {location.name}
+                                        </motion.div>
+                                    </Link>
+                                </motion.li>
+                            ))}
+                        </ul>
                     </motion.div>
-                  </Link>
-                </motion.li>
-              ))}
-            </ul>
-          </motion.div>
 
-          {/* Services Column */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.6, delay: 0.3 }}
-          >
-            <motion.div
-              className="flex items-center space-x-3 mb-4"
-              whileHover={{ x: 2 }}
-              transition={{ type: "spring", stiffness: 400 }}
-            >
-              <svg className="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-              </svg>
-              <h4 className="font-serif text-lg text-amber-400">Services</h4>
-            </motion.div>
-            <ul className="space-y-2 text-sm">
-              {[
-                { name: "Full-Service", link: "/events/full-service" },
-                { name: "Buffet-Style", link: "/events/buffet-style" }
-              ].map((service, i) => (
-                <motion.li
-                  key={i}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={isInView ? { opacity: 1, x: 0 } : {}}
-                  transition={{ duration: 0.3, delay: 0.4 + i * 0.1 }}
-                >
-                  <Link href={service.link}>
+                    {/* Services Column */}
                     <motion.div
-                      className="text-stone-400 hover:text-amber-400 transition-colors cursor-pointer"
-                      whileHover={{ x: 5, color: "#fbbf24" }}
-                      transition={{ type: "spring", stiffness: 400 }}
+                        initial={{ opacity: 0, y: 30 }}
+                        animate={isInView ? { opacity: 1, y: 0 } : {}}
+                        transition={{ duration: 0.6, delay: 0.3 }}
                     >
-                      {service.name}
+                        <motion.div
+                            className="flex items-center space-x-3 mb-4"
+                            whileHover={{ x: 2 }}
+                            transition={{ type: "spring", stiffness: 400 }}
+                        >
+                            <svg className="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                            </svg>
+                            <h4 className="font-serif text-lg text-amber-400">Services</h4>
+                        </motion.div>
+                        <ul className="space-y-2 text-sm">
+                            {[
+                                { name: "Full-Service", link: "/events/full-service" },
+                                { name: "Buffet-Style", link: "/events/buffet-style" }
+                            ].map((service, i) => (
+                                <motion.li
+                                    key={i}
+                                    initial={{ opacity: 0, x: -10 }}
+                                    animate={isInView ? { opacity: 1, x: 0 } : {}}
+                                    transition={{ duration: 0.3, delay: 0.4 + i * 0.1 }}
+                                >
+                                    <Link href={service.link}>
+                                        <motion.div
+                                            className="text-stone-400 hover:text-amber-400 transition-colors cursor-pointer"
+                                            whileHover={{ x: 5, color: "#fbbf24" }}
+                                            transition={{ type: "spring", stiffness: 400 }}
+                                        >
+                                            {service.name}
+                                        </motion.div>
+                                    </Link>
+                                </motion.li>
+                            ))}
+                        </ul>
                     </motion.div>
-                  </Link>
-                </motion.li>
-              ))}
-            </ul>
-          </motion.div>
 
-          {/* Company Column */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.6, delay: 0.4 }}
-          >
-            <motion.div
-              className="flex items-center space-x-3 mb-4"
-              whileHover={{ x: 2 }}
-              transition={{ type: "spring", stiffness: 400 }}
-            >
-              <svg className="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-              </svg>
-              <h4 className="font-serif text-lg text-amber-400">Company</h4>
-            </motion.div>
-            <ul className="space-y-2 text-sm">
-              {[
-                { name: "About Us", link: "/about" },
-                { name: "Blog", link: "/" },
-                { name: "Contact", link: "/contact" }
-              ].map((item, i) => (
-                <motion.li
-                  key={i}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={isInView ? { opacity: 1, x: 0 } : {}}
-                  transition={{ duration: 0.3, delay: 0.5 + i * 0.1 }}
-                >
-                  <Link href={item.link}>
+                    {/* Company Column */}
                     <motion.div
-                      className="text-stone-400 hover:text-amber-400 transition-colors cursor-pointer"
-                      whileHover={{ x: 5, color: "#fbbf24" }}
-                      transition={{ type: "spring", stiffness: 400 }}
+                        initial={{ opacity: 0, y: 30 }}
+                        animate={isInView ? { opacity: 1, y: 0 } : {}}
+                        transition={{ duration: 0.6, delay: 0.4 }}
                     >
-                      {item.name}
+                        <motion.div
+                            className="flex items-center space-x-3 mb-4"
+                            whileHover={{ x: 2 }}
+                            transition={{ type: "spring", stiffness: 400 }}
+                        >
+                            <svg className="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                            </svg>
+                            <h4 className="font-serif text-lg text-amber-400">Company</h4>
+                        </motion.div>
+                        <ul className="space-y-2 text-sm">
+                            {[
+                                { name: "About Us", link: "/about" },
+                                { name: "Blog", link: "/" },
+                                { name: "Contact", link: "/contact" }
+                            ].map((item, i) => (
+                                <motion.li
+                                    key={i}
+                                    initial={{ opacity: 0, x: -10 }}
+                                    animate={isInView ? { opacity: 1, x: 0 } : {}}
+                                    transition={{ duration: 0.3, delay: 0.5 + i * 0.1 }}
+                                >
+                                    <Link href={item.link}>
+                                        <motion.div
+                                            className="text-stone-400 hover:text-amber-400 transition-colors cursor-pointer"
+                                            whileHover={{ x: 5, color: "#fbbf24" }}
+                                            transition={{ type: "spring", stiffness: 400 }}
+                                        >
+                                            {item.name}
+                                        </motion.div>
+                                    </Link>
+                                </motion.li>
+                            ))}
+                        </ul>
                     </motion.div>
-                  </Link>
-                </motion.li>
-              ))}
-            </ul>
-          </motion.div>
-        </div>
+                </div>
 
-        {/* Copyright */}
-        <motion.div
-          className="border-t border-stone-700 mt-8 pt-8 text-center"
-          initial={{ opacity: 0 }}
-          animate={isInView ? { opacity: 1 } : {}}
-          transition={{ duration: 0.6, delay: 1 }}
-        >
-          <p className="text-stone-400 text-sm flex items-center justify-center space-x-2">
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <span>© 2025 Pune Caterers. All Rights Reserved.</span>
-          </p>
-        </motion.div>
-      </div>
-    </footer>
-  );
+                {/* Copyright */}
+                <motion.div
+                    className="border-t border-stone-700 mt-8 pt-8 text-center"
+                    initial={{ opacity: 0 }}
+                    animate={isInView ? { opacity: 1 } : {}}
+                    transition={{ duration: 0.6, delay: 1 }}
+                >
+                    <p className="text-stone-400 text-sm flex items-center justify-center space-x-2">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span>© 2025 Pune Caterers. All Rights Reserved.</span>
+                    </p>
+                </motion.div>
+            </div>
+        </footer>
+    );
 }
 // Hero Section
 function HeroSection({
     heroRef,
     heroTextY,
     heroImageScale,
-    isLoaded
+    isLoaded,
 }: {
     heroRef: React.RefObject<HTMLDivElement>;
     heroTextY: any;
     heroImageScale: any;
     isLoaded: boolean;
 }) {
+const [isDialogOpen, setIsDialogOpen] = useState(false);
+const [contactDialogProps, setContactDialogProps] = useState({
+    defaultEventType: "",
+    title: "Get Your Free Quote"
+  });
+
+ // Function to open contact dialog with specific props
+const openContactDialog = (eventType = "", title = "Get Your Free Quote") => {
+    setContactDialogProps({ defaultEventType: eventType, title });
+    
+  };
+
     return (
         <section ref={heroRef} className="relative md:mt-20 min-h-screen flex items-center pt-12 overflow-hidden">
             {/* Enhanced Background */}
@@ -613,6 +639,13 @@ function HeroSection({
                             for different types of events across all major Pune locations.
                         </motion.p>
 
+                        <ContactFormDialog
+                                    isOpen={isDialogOpen}
+                                    onClose={() => setIsDialogOpen(false)} // <-- Close dialog
+                                    defaultEventType={contactDialogProps.defaultEventType}
+                                    title={contactDialogProps.title}
+                        />
+
                         <motion.div
                             className="flex flex-col sm:flex-row gap-4 justify-center"
                             initial={{ opacity: 0, y: 20 }}
@@ -623,7 +656,11 @@ function HeroSection({
                                 className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-4 rounded-2xl font-medium relative overflow-hidden group inline-flex items-center justify-center space-x-2"
                                 whileHover={{ scale: 1.02 }}
                                 whileTap={{ scale: 0.98 }}
+                                onClick={() => {setIsDialogOpen(true) // <-- Open dialog
+                                openContactDialog("","Start Planning Your Event")     } } 
                             >
+                          
+
                                 <motion.div
                                     className="absolute inset-0 bg-gradient-to-r from-purple-700 to-pink-700"
                                     initial={{ x: "-100%" }}
@@ -645,6 +682,8 @@ function HeroSection({
                                 }}
                                 whileTap={{ scale: 0.98 }}
                                 transition={{ duration: 0.2 }}
+                                onClick={() => {setIsDialogOpen(true) // <-- Open dialog
+                                openContactDialog("","Contact Us")     } } 
                             >
                                 <Phone className="w-4 h-4" />
                                 <span>Get Free Quote</span>
@@ -1177,7 +1216,7 @@ function ContactCTA({
             {/* Enhanced Background Effects - keep existing */}
             <div className="absolute inset-0">
                 <motion.div
-                className="absolute inset-0 opacity-5"
+                    className="absolute inset-0 opacity-5"
                     style={{
                         backgroundImage: `linear-gradient(rgba(168, 85, 247, 0.1) 1px, transparent 1px),
                              linear-gradient(90deg, rgba(168, 85, 247, 0.1) 1px, transparent 1px)`,
@@ -1269,11 +1308,10 @@ function ContactCTA({
                                 animate={{ opacity: 1, y: 0, scale: 1 }}
                                 exit={{ opacity: 0, y: -20, scale: 0.95 }}
                                 transition={{ duration: 0.3 }}
-                                className={`mb-8 p-6 rounded-2xl border ${
-                                    submitStatus.type === 'success'
+                                className={`mb-8 p-6 rounded-2xl border ${submitStatus.type === 'success'
                                         ? 'bg-green-900/20 border-green-500/30 text-green-400'
                                         : 'bg-red-900/20 border-red-500/30 text-red-400'
-                                }`}
+                                    }`}
                             >
                                 <div className="flex items-center space-x-3">
                                     {submitStatus.type === 'success' ? (
@@ -1507,7 +1545,7 @@ function ContactCTA({
                                                 <PartyPopper className="w-4 h-4" />
                                                 <span>Event Type</span>
                                             </Label>
-                                            <Select 
+                                            <Select
                                                 onValueChange={(value) => setFormData({ ...formData, eventType: value })}
                                                 disabled={localIsSubmitting}
                                             >
@@ -1532,7 +1570,7 @@ function ContactCTA({
                                                 <MapPin className="w-4 h-4" />
                                                 <span>Location in Pune</span>
                                             </Label>
-                                            <Select 
+                                            <Select
                                                 onValueChange={(value) => setFormData({ ...formData, location: value })}
                                                 disabled={localIsSubmitting}
                                             >
