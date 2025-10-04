@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import ContactFormDialog from "@/components/ContactFormDialog";
 import { useState, useEffect, useRef } from "react";
 import { motion, useScroll, useTransform, useInView, AnimatePresence } from "framer-motion";
 import { Calendar, CalendarDays, Mail, MapPin, Phone, Send, Users, Heart, Leaf, Star, Rocket, Sparkles, CheckCircle, XCircle } from "lucide-react";
@@ -760,6 +761,7 @@ function OurTeamSection() {
 // Our Values Section - Dynamic Professional Version
 function OurValuesSection() {
   const ref = useRef(null);
+      const [isDialogOpen, setIsDialogOpen] = useState(false);
   const isInView = useInView(ref, { once: true });
 
   const values = [
@@ -1077,13 +1079,21 @@ function OurValuesSection() {
                 <p className="text-stone-600 text-lg mb-6 max-w-2xl mx-auto">
                   Let us show you how our commitment to excellence, sustainability, and innovation creates unforgettable events.
                 </p>
+
                 <motion.button
                   className="bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white px-8 py-4 rounded-2xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
                   whileHover={{ scale: 1.05, y: -2 }}
                   whileTap={{ scale: 0.95 }}
+                  onClick={() => setIsDialogOpen(true)} // <-- Open dialog
                 >
                   Start Planning Your Event
                 </motion.button>
+                               <ContactFormDialog
+                isOpen={isDialogOpen}
+               onClose={() => setIsDialogOpen(false)} // <-- Close dialog
+               title="Plan Your Event With Us"
+                defaultEventType="Wedding"
+                />
               </motion.div>
             </motion.div>
           </motion.div>
@@ -1095,6 +1105,8 @@ function OurValuesSection() {
 // Why Choose Us Section
 function WhyChooseUsSection() {
   const ref = useRef(null);
+  
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
   const isInView = useInView(ref, { once: true });
 
   const reasons = [
@@ -1162,12 +1174,14 @@ function WhyChooseUsSection() {
             transition={{ duration: 0.6, delay: 1 }}
           >
             <motion.a
+             onClick={() => setIsDialogOpen(true)}
               href="#portfolio-link"
               className="inline-block bg-amber-800 text-white px-8 py-3 rounded-full relative overflow-hidden group"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
               <motion.div
+              
                 className="absolute inset-0 bg-amber-900"
                 initial={{ x: "-100%" }}
                 whileHover={{ x: "0%" }}
@@ -1175,6 +1189,12 @@ function WhyChooseUsSection() {
               />
               <span className="relative">See Our Portfolio and Get Inspired</span>
             </motion.a>
+                  <ContactFormDialog
+                   isOpen={isDialogOpen}
+                   onClose={() => setIsDialogOpen(false)} // <-- Close dialog
+                    title="See the Portfolio And Get Inspired"
+                   defaultEventType="Wedding"
+                   />
           </motion.div>
         </div>
       </div>
@@ -1185,6 +1205,8 @@ function WhyChooseUsSection() {
 // FAQ Section
 function FAQSection({ openFAQ, setOpenFAQ }) {
   const ref = useRef(null);
+  
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
   const isInView = useInView(ref, { once: true });
 
   const faqs = [
@@ -1285,12 +1307,19 @@ function FAQSection({ openFAQ, setOpenFAQ }) {
           transition={{ duration: 0.6, delay: 1 }}
         >
           <motion.a
-            href="#faq-contact-link"
+             onClick={() => setIsDialogOpen(true)} // <-- Open dialog
+             href="#faq-contact-link"
             className="text-amber-800 underline hover:no-underline transition-all"
             whileHover={{ scale: 1.05, color: "#f59e0b" }}
           >
             Ask a Question
           </motion.a>
+                <ContactFormDialog
+        isOpen={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)} // <-- Close dialog
+        title="Ask The Quries"
+        defaultEventType="Wedding"
+      />
         </motion.div>
       </div>
     </section>
