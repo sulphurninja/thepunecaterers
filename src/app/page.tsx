@@ -2643,6 +2643,9 @@ function ContactSection() {
           type: 'success',
           message: result.message || 'Form submitted successfully!'
         });
+        setTimeout(() => {
+          window.location.href = "/thank_you_54321";
+        }, 1500);
       } else {
         setSubmitStatus({
           type: 'error',
