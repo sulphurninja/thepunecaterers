@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
 import { motion, useScroll, useTransform, useInView } from "framer-motion";
@@ -26,6 +27,7 @@ import Link from "next/link";
 import ContactFormDialog from "@/components/ContactFormDialog";
 
 export default function ContactUs() {
+  const router = useRouter();
   const [scrollY, setScrollY] = useState(0);
   const [isLoaded, setIsLoaded] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -74,7 +76,7 @@ export default function ContactUs() {
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 2000));
     setIsSubmitting(false);
-    // Reset form or show success message
+    router.push('/thank_you_54321');
   };
 
   const puneLocations = [
@@ -322,7 +324,7 @@ export default function ContactUs() {
         setFormData={setFormData}
         focusedField={focusedField}
         setFocusedField={setFocusedField}
-        handleSubmit={() => { }} // Remove this line since we're handling it internally now
+        handleSubmit={handleSubmit}
         isSubmitting={isSubmitting}
         setIsSubmitting={setIsSubmitting} // Add this prop
         puneLocations={puneLocations}

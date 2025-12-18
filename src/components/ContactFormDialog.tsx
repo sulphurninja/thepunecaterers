@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { format } from "date-fns";
@@ -41,6 +42,7 @@ export default function ContactFormDialog({
   defaultEventType = "",
   title = "Get Your Free Quote"
 }: ContactFormDialogProps) {
+  const router = useRouter();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -136,6 +138,7 @@ export default function ContactFormDialog({
           type: 'success',
           message: result.message || 'Form submitted successfully!'
         });
+        router.push('/thank_you_54321');
       } 
       else {
         setSubmitStatus({

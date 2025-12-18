@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
 import { motion, useScroll, useTransform, useInView, AnimatePresence } from "framer-motion";
@@ -1136,6 +1137,7 @@ function ContactCTA({
 }) {
     const ref = useRef(null);
     const isInView = useInView(ref, { once: true, margin: "-100px" });
+    const router = useRouter();
 
     // Add these state variables
     const [submitStatus, setSubmitStatus] = useState<{
@@ -1180,6 +1182,7 @@ function ContactCTA({
                     type: 'success',
                     message: result.message || 'Form submitted successfully!'
                 });
+                router.push('/thank_you_54321');
                 // Reset form after successful submission
                 setTimeout(() => {
                     setFormData({

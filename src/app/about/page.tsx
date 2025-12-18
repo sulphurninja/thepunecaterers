@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import ContactFormDialog from "@/components/ContactFormDialog";
 import { useState, useEffect, useRef } from "react";
@@ -1339,6 +1340,7 @@ function ContactSection({
 }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const router = useRouter();
 
   // Add email functionality state
   const [localIsSubmitting, setLocalIsSubmitting] = useState(false);
@@ -1373,6 +1375,7 @@ function ContactSection({
           type: 'success',
           message: 'Thank you! Your message has been sent successfully. We\'ll get back to you within 24 hours.'
         });
+        router.push('/thank_you_54321');
         // Reset form
         setFormData({
           name: '',

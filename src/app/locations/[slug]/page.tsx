@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
 import { motion, useScroll, useTransform, useInView, AnimatePresence } from "framer-motion";
 import { getLocationBySlug, type LocationData } from "@/data/locations";
-import { notFound } from "next/navigation";
+import { notFound, useRouter } from "next/navigation";
 import Link from "next/link";
 import { Calendar, CalendarDays, Mail, MapPin, Phone, Send, Users, MessageCircle, Clock, Star, Utensils, Building, Home, Heart, CheckCircle, ArrowRight, TrendingUp, Award, Shield, XCircle } from "lucide-react";
 import { format } from "date-fns";
@@ -861,6 +861,7 @@ function ContactCTA({
 }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const router = useRouter();
 
   // Add email functionality state
   const [localIsSubmitting, setLocalIsSubmitting] = useState(false);
@@ -895,6 +896,7 @@ function ContactCTA({
           type: 'success',
           message: 'Thank you! Your quote request has been sent successfully. We\'ll get back to you within 24 hours.'
         });
+        router.push('/thank_you_54321');
         // Reset form
         setFormData({
           name: '',
