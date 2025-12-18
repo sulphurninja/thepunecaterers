@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
 import { motion, useScroll, useTransform, useInView } from "framer-motion";
 import { getEventBySlug, type EventData } from "@/data/events";
-import { notFound } from "next/navigation";
+import { notFound, useRouter } from "next/navigation";
 import Link from "next/link";
 import {
   Calendar, CalendarDays, Mail, MapPin, Phone, Send, Users, MessageCircle,
@@ -55,6 +55,7 @@ export default function EventPage({ params }: EventPageProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+  const router = useRouter();
   const heroRef = useRef(null);
   const { scrollYProgress } = useScroll({
     target: heroRef,
@@ -87,6 +88,7 @@ export default function EventPage({ params }: EventPageProps) {
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 2000));
     setIsSubmitting(false);
+    router.push('/thank_you_54321');
   };
 
   return (

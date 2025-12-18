@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
 import { motion, useScroll, useTransform, useInView, AnimatePresence } from "framer-motion";
@@ -2573,6 +2574,7 @@ function BlogSection({ openContactDialog }) {
 function ContactSection() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
+  const router = useRouter();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -2644,7 +2646,7 @@ function ContactSection() {
           message: result.message || 'Form submitted successfully!'
         });
         setTimeout(() => {
-          window.location.href = "/thank_you_54321";
+          router.push("/thank_you_54321");
         }, 1500);
       } else {
         setSubmitStatus({
